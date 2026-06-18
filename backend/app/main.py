@@ -18,7 +18,7 @@ app = FastAPI(title="Guella MRV API" , version = "1.0.0")
 # Configuración de CORS
 # Obtener los orígenes permitidos de una variable de entorno
 # Esto permite que el frontend de Vercel se conecte al backend de Render
-# Si FRONTEND_URL no está definida, se usa solo localhost para desarrollo local
+# Si FRONTEND_URL no está definida, se usa solo localhost para desarrollo local.
 FRONTEND_URLS = os.environ.get("FRONTEND_URL", "http://localhost:5173,http://127.0.0.1:5173").split(',')
 # Limpiar espacios en blanco de cada URL
 FRONTEND_URLS = [url.strip() for url in FRONTEND_URLS]
