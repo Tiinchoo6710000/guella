@@ -1,4 +1,4 @@
-import clienteApi from './clienteApi'
+import clienteApi from './clienteApi'; // Importar la instancia de axios configurada
 
 export const obtenerInputsEvento = (eventoId) => clienteApi.get(`/inputs/evento/${eventoId}`)
 

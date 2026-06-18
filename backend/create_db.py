@@ -17,12 +17,8 @@ from app.modelos.evidencia import Evidencia
 
 # Obtén la URL de la base de datos de la variable de entorno.
 # Para esta ejecución local, la leeremos directamente de la variable de entorno o la pondremos aquí temporalmente.
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
-    # Si no está configurada como variable de entorno, puedes pegarla aquí TEMPORALMENTE para ejecutar el script.
-    # ¡RECUERDA BORRARLA O COMENTARLA DESPUÉS!
-    # DATABASE_URL = "postgresql://postgres:TU_CONTRASEÑA@db.TU_PROYECTO.supabase.co:5432/postgres"
-    raise Exception("DATABASE_URL no está configurada como variable de entorno. Por favor, configúrala o pégala directamente en create_db.py para esta ejecución.")
+DATABASE_URL = "postgresql://postgres.luwvduauawuwixblaans:Marazul2020_@aws-1-us-east-2.pooler.supabase.com:6543/postgres"
+
 
 engine = create_engine(DATABASE_URL)
 
