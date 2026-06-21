@@ -159,7 +159,8 @@ export default function PaginaDetalleCalculoHistorico() {
                 <div key={item.id} className="border rounded p-3">
                   <p className="font-medium">{item.subtipo || 'Movilidad'}</p>
                   <p className="text-sm text-gray-600">Distancia: {item.input_valor} {item.input_unidad}</p>
-                  <p className="text-sm text-gray-600">Empleados: {item.cantidad_empleados || '-'}</p>
+                  <p className="text-sm text-gray-600">Personas: {item.cantidad_empleados || '-'}</p>
+                  <p className="text-sm text-gray-600">Dimension: {item.factor_valor} {item.factor_unidad}</p>
                   {item.comentario && (
                     <p className="text-sm text-gray-600">Comentario: {item.comentario}</p>
                   )}
