@@ -24,11 +24,11 @@ export default function PaginaEventos() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Eventos</h1>
         <button
           onClick={() => setAbrirModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded w-full sm:w-auto font-medium"
         >
           Crear evento
         </button>
@@ -37,7 +37,7 @@ export default function PaginaEventos() {
       {cargando ? (
         <p>Cargando eventos...</p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {eventos.map((e) => (
             <TarjetaEvento key={e.id} evento={e} />
           ))}

@@ -3,7 +3,7 @@ export default function TarjetaFactor({ factor, onEliminar }) {
     <div className="bg-white p-4 rounded-lg border shadow-sm relative group">
       <button
         onClick={onEliminar}
-        className="absolute top-2 right-2 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+        className="absolute top-2 right-2 text-red-400 hover:text-red-600 transition-opacity opacity-100 md:opacity-0 md:group-hover:opacity-100"
         title="Eliminar Dimension"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

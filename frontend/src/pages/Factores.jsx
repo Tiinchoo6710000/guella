@@ -65,11 +65,11 @@ export default function PaginaFactores() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Dimensiones</h1>
         <button
           onClick={() => setAbrirModal(true)}
-          className="bg-emerald-600 text-white px-4 py-2 rounded"
+          className="bg-emerald-600 text-white px-4 py-2 rounded w-full sm:w-auto font-medium"
         >
           Cargar Dimension
         </button>
@@ -80,7 +80,7 @@ export default function PaginaFactores() {
         <select
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
-          className="w-full border rounded p-2"
+          className="w-full sm:max-w-xs border rounded p-2"
         >
           {opcionesFiltro.map(option => (
             <option key={option.value} value={option.value}>{option.label}</option>
@@ -90,7 +90,7 @@ export default function PaginaFactores() {
       {cargando ? (
         <p>Cargando dimensiones...</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {factoresFiltrados.map((f) => (
             <TarjetaFactor 
               key={f.id} 

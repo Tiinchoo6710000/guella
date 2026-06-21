@@ -85,7 +85,7 @@ export default function ModalCrearFactor({ onCerrar, onCreado }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl">
+      <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4">Crear Dimension</h2>
         <form onSubmit={manejarCrear} className="space-y-3">
           <label className="text-xs font-semibold text-gray-500 uppercase">Tipo</label>
