@@ -164,6 +164,8 @@ export default function PaginaDetalleCalculoHistorico() {
                   <p className="font-medium">{item.subtipo || 'Sin subtipo'}</p>
                   <p className="text-sm text-gray-600">Valor: {item.input_valor} {item.input_unidad}</p>
                   <p className="text-sm text-gray-600">Dimension: {item.factor_valor} {item.factor_unidad}</p>
+                  <p className="text-sm text-gray-600">Fuente: {item.factor_fuente || '-'}</p>
+                  <p className="text-sm text-gray-600">Version: {item.factor_version || '-'}</p>
                   <p className="text-sm text-gray-600">Emisiones: {Number(item.emisiones).toFixed(2)} kgCO2e</p>
                   {item.comentario && (
                     <p className="text-sm text-gray-600">Comentario: {item.comentario}</p>
@@ -184,6 +186,8 @@ export default function PaginaDetalleCalculoHistorico() {
                   <p className="text-sm text-gray-600">Distancia: {item.input_valor} {item.input_unidad}</p>
                   <p className="text-sm text-gray-600">Personas: {item.cantidad_empleados || '-'}</p>
                   <p className="text-sm text-gray-600">Dimension: {item.factor_valor} {item.factor_unidad}</p>
+                  <p className="text-sm text-gray-600">Fuente: {item.factor_fuente || '-'}</p>
+                  <p className="text-sm text-gray-600">Version: {item.factor_version || '-'}</p>
                   {item.comentario && (
                     <p className="text-sm text-gray-600">Comentario: {item.comentario}</p>
                   )}
@@ -214,6 +218,8 @@ export default function PaginaDetalleCalculoHistorico() {
                         <p className="font-semibold text-gray-700 capitalize">{item.subtipo || 'Movilidad'}</p>
                         <p className="text-gray-500">Valor: {item.input_valor} {item.input_unidad}</p>
                         <p className="text-gray-500">Dimension: {item.factor_valor} {item.factor_unidad}</p>
+                        <p className="text-gray-500">Fuente: {item.factor_fuente || '-'}</p>
+                        <p className="text-gray-500">Version: {item.factor_version || '-'}</p>
                         <p className="font-medium text-gray-800">Emisiones: {Number(item.emisiones).toFixed(2)} kgCO2e</p>
                       </div>
                     ))}
