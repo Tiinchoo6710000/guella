@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import clienteApi from '../api/clienteApi'
 import GraficoBarrasPublico from '../components/publico/GraficoBarrasPublico'
@@ -12,6 +12,7 @@ export default function PaginaPublica() {
   const [equivalenciaActiva, setEquivalenciaActiva] = useState('arboles')
   const [tabActiva, setTabActiva] = useState('categoria')
   const [totalAnimado, setTotalAnimado] = useState(0)
+  const animacionCompletada = useRef(null)
 
   useEffect(() => {
     async function cargar() {
@@ -31,27 +32,44 @@ export default function PaginaPublica() {
   const porOrigen = useMemo(() => agruparPorCampo(datos?.detalles || [], 'origen'), [datos])
   const total = datos?.calculo?.total || 0
 
-  // Efecto para animar el contador de emisiones de 0 al valor real
+  // Animación de cuenta del total utilizando requestAnimationFrame con control de useRef para evitar repeticiones
   useEffect(() => {
-    if (!total) return
-    let inicio = 0
-    const duracion = 1200 // 1.2 segundos
-    const fps = 60
-    const pasos = duracion / (1000 / fps)
-    const incremento = total / pasos
+    const totalNum = Number(total)
+    if (!totalNum) {
+      setTotalAnimado(0)
+      animacionCompletada.current = null
+      return
+    }
 
-    const timer = setInterval(() => {
-      inicio += incremento
-      if (inicio >= total) {
-        setTotalAnimado(total)
-        clearInterval(timer)
+    // Si ya completamos la animación para esta cifra exacta, evitamos reiniciar
+    if (animacionCompletada.current === totalNum) {
+      setTotalAnimado(totalNum)
+      return
+    }
+
+    let frameId
+    const startTime = performance.now()
+    const duracion = 1000 // 1 segundo exacto de duración
+
+    const animar = (now) => {
+      const transcurrido = now - startTime
+      const progreso = Math.min(transcurrido / duracion, 1)
+      
+      setTotalAnimado(progreso * totalNum)
+
+      if (progreso < 1) {
+        frameId = requestAnimationFrame(animar)
       } else {
-        setTotalAnimado(inicio)
+        setTotalAnimado(totalNum)
+        animacionCompletada.current = totalNum // Marcar como completado para esta cifra
       }
-    }, 1000 / fps)
+    }
 
-    return () => clearInterval(timer)
+    frameId = requestAnimationFrame(animar)
+    return () => cancelAnimationFrame(frameId)
   }, [total])
+
+
 
   // Datos para equivalencias interactivas
   const equivalencias = {
