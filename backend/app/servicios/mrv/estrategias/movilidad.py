@@ -118,7 +118,7 @@ class EstrategiaMovilidad(EstrategiaBase):
                         "factor_fuente": factor.fuente,
 
                         "origen": "ticket",
-                        "input_id": None,
+                        "input_id": ticket.id,
                         "input_version": None
                     })
 

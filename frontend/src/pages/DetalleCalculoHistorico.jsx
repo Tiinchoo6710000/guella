@@ -6,6 +6,7 @@ import { obtenerEvidenciasEvento } from '../api/evidenciasApi'
 import GraficoTorta from '../components/GraficoTorta'
 import { obtenerEvento } from '../api/eventosApi'
 import { agruparPorCampo } from '../utilidades/agruparCalculo'
+import { obtenerTicketsEvento } from '../api/ticketsApi'
 
 export default function PaginaDetalleCalculoHistorico() {
   const { id, calculoId } = useParams()
@@ -14,26 +15,30 @@ export default function PaginaDetalleCalculoHistorico() {
   const [calculo, setCalculo] = useState(null)
   const [detalle, setDetalle] = useState([])
   const [evidencias, setEvidencias] = useState([])
+  const [ticketsData, setTicketsData] = useState([])
   const [cargando, setCargando] = useState(true)
 
   const cargar = useCallback(async function cargar() {
     try {
-      const [rEvento, rCalculo, rDetalle, rEvidencias] = await Promise.all([
+      const [rEvento, rCalculo, rDetalle, rEvidencias, rTickets] = await Promise.all([
         obtenerEvento(id),
         obtenerCalculo(calculoId),
         obtenerDetalleCalculo(calculoId),
-        obtenerEvidenciasEvento(id)
+        obtenerEvidenciasEvento(id),
+        obtenerTicketsEvento(id)
       ])
 
       setEvento(rEvento.data)
       setCalculo(rCalculo.data)
       setDetalle(rDetalle.data || [])
       setEvidencias(rEvidencias.data || [])
+      setTicketsData(rTickets.data || [])
     } catch {
       setEvento(null)
       setCalculo(null)
       setDetalle([])
       setEvidencias([])
+      setTicketsData([])
     } finally {
       setCargando(false)
     }
@@ -54,6 +59,24 @@ export default function PaginaDetalleCalculoHistorico() {
   const inputs = detalle.filter((item) => item.origen === 'input')
   const movilidades = detalle.filter((item) => item.origen === 'movilidad_empleado')
   const tickets = detalle.filter((item) => item.origen === 'ticket')
+
+  const ticketsAgrupados = useMemo(() => {
+    const mapa = {}
+    tickets.forEach(item => {
+      const key = item.input_id || 'sin_id'
+      if (!mapa[key]) {
+        const tInfo = ticketsData.find(t => t.id === item.input_id)
+        mapa[key] = {
+          ticket_id: tInfo ? tInfo.ticket_id : (item.input_id ? `Ticket #${item.input_id}` : 'Ticket sin ID'),
+          movilidades: [],
+          totalEmisiones: 0
+        }
+      }
+      mapa[key].movilidades.push(item)
+      mapa[key].totalEmisiones += Number(item.emisiones || 0)
+    })
+    return Object.values(mapa)
+  }, [tickets, ticketsData])
 
   const publicUrl = evento?.public_slug ? `${window.location.origin}/public/${evento.public_slug}` : null
 
@@ -175,13 +198,26 @@ export default function PaginaDetalleCalculoHistorico() {
       <section className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-lg border shadow-sm">
           <h2 className="font-semibold mb-3">Tickets</h2>
-          {tickets.length === 0 ? <p className="text-sm text-gray-500">No hay tickets asociados a este cálculo.</p> : (
-            <div className="space-y-3">
-              {tickets.map(item => (
-                <div key={item.id} className="border rounded p-3">
-                  <p className="font-medium">{item.subtipo || 'Ticket'}</p>
-                  <p className="text-sm text-gray-600">Valor: {item.input_valor} {item.input_unidad}</p>
-                  <p className="text-sm text-gray-600">Emisiones: {Number(item.emisiones).toFixed(2)} kgCO2e</p>
+          {ticketsAgrupados.length === 0 ? <p className="text-sm text-gray-500">No hay tickets asociados a este cálculo.</p> : (
+            <div className="space-y-4">
+              {ticketsAgrupados.map(ticketGroup => (
+                <div key={ticketGroup.ticket_id} className="border rounded p-4 bg-gray-50/50 space-y-3">
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <p className="font-bold text-gray-800">Ticket: {ticketGroup.ticket_id}</p>
+                    <p className="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-1 rounded">
+                      Total: {ticketGroup.totalEmisiones.toFixed(2)} kgCO2e
+                    </p>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {ticketGroup.movilidades.map((item, idx) => (
+                      <div key={idx} className="bg-white border rounded p-2.5 shadow-sm text-xs space-y-1">
+                        <p className="font-semibold text-gray-700 capitalize">{item.subtipo || 'Movilidad'}</p>
+                        <p className="text-gray-500">Valor: {item.input_valor} {item.input_unidad}</p>
+                        <p className="text-gray-500">Dimension: {item.factor_valor} {item.factor_unidad}</p>
+                        <p className="font-medium text-gray-800">Emisiones: {Number(item.emisiones).toFixed(2)} kgCO2e</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
