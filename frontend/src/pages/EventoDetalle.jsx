@@ -19,6 +19,7 @@ export default function PaginaEventoDetalle() {
   const [inputs, setInputs] = useState([])
   const [evidencia, setEvidencia] = useState({ filename: '', url: '', tipo: 'pdf' })
   const [cargando, setCargando] = useState(true)
+  const [tabActiva, setTabActiva] = useState('categoria')
 
   const cargar = useCallback(async function cargar() {
     try {
@@ -112,18 +113,18 @@ export default function PaginaEventoDetalle() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-950">{evento.nombre}</h1>
           <p className="text-gray-600">{evento.fecha} - {evento.ciudad}, {evento.region}, {evento.pais}</p>
         </div>
-        <div className="flex gap-2">
-            <Link to={`/eventos/${id}/calculo`} className="bg-indigo-600 text-white px-3 py-2 rounded">Calcular</Link>
-          <button onClick={manejarEliminarEvento} className="border border-red-200 text-red-700 px-3 py-2 rounded">Eliminar evento</button>
+        <div className="flex w-full sm:w-auto gap-2">
+          <Link to={`/eventos/${id}/calculo`} className="flex-1 sm:flex-initial bg-indigo-600 text-white px-3 py-2 rounded text-center font-medium">Calcular</Link>
+          <button onClick={manejarEliminarEvento} className="flex-1 sm:flex-initial border border-red-200 text-red-700 px-3 py-2 rounded text-center font-medium">Eliminar evento</button>
         </div>
       </div>
 
-      <section className="grid md:grid-cols-4 gap-4">
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 rounded-lg border shadow-sm">
           <p className="text-sm text-gray-500">Asistentes</p>
           <p className="text-2xl font-bold">{evento.cantidad_asistentes}</p>
@@ -147,34 +148,89 @@ export default function PaginaEventoDetalle() {
       {evento.calculo_actual && (
         <section className="grid lg:grid-cols-[1fr_320px] gap-6">
           <div className="bg-white p-4 rounded-lg border shadow-sm">
-            <h2 className="font-semibold mb-4">Auditoría del cálculo activo</h2>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-sm font-semibold mb-3">Emisiones por categoría</h3>
-                <GraficoBarras datos={datosCategoria} />
+            <h2 className="font-semibold mb-4 text-center md:text-left">Auditoría del cálculo activo</h2>
+
+            {/* VISTA MÓVIL (Con pestañas) */}
+            <div className="md:hidden space-y-6">
+              <div className="flex p-1 bg-gray-100 border border-gray-200 rounded-xl">
+                <button
+                  onClick={() => setTabActiva('categoria')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${
+                    tabActiva === 'categoria'
+                      ? 'bg-white text-indigo-700 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Por Categoría
+                </button>
+                <button
+                  onClick={() => setTabActiva('origen')}
+                  className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${
+                    tabActiva === 'origen'
+                      ? 'bg-white text-indigo-700 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Por Origen
+                </button>
               </div>
-              <div>
-                <h3 className="text-sm font-semibold mb-3">Emisiones por origen</h3>
-                <GraficoBarras datos={datosOrigen} />
+
+              {tabActiva === 'categoria' ? (
+                <div className="space-y-6 flex flex-col items-center">
+                  <div className="w-full">
+                    <h3 className="text-sm font-semibold mb-3 text-center">Emisiones por categoría</h3>
+                    <GraficoBarras datos={datosCategoria} />
+                  </div>
+                  <div className="w-full flex flex-col items-center">
+                    <h3 className="text-sm font-semibold mb-3 text-center">Distribución por categoría</h3>
+                    <GraficoTorta datos={datosCategoria} tamaño={200} />
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-6 flex flex-col items-center">
+                  <div className="w-full">
+                    <h3 className="text-sm font-semibold mb-3 text-center">Emisiones por origen</h3>
+                    <GraficoBarras datos={datosOrigen} />
+                  </div>
+                  <div className="w-full flex flex-col items-center">
+                    <h3 className="text-sm font-semibold mb-3 text-center">Distribución por origen</h3>
+                    <GraficoTorta datos={datosOrigen} tamaño={200} />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* VISTA ESCRITORIO (Grid Completo) */}
+            <div className="hidden md:block">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">Emisiones por categoría</h3>
+                  <GraficoBarras datos={datosCategoria} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold mb-3">Emisiones por origen</h3>
+                  <GraficoBarras datos={datosOrigen} />
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-6 mt-6">
+                <div className="flex flex-col items-center">
+                  <h3 className="text-sm font-semibold mb-3 w-full text-center">Distribución por categoría</h3>
+                  <GraficoTorta datos={datosCategoria} tamaño={220} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <h3 className="text-sm font-semibold mb-3 w-full text-center">Distribución por origen</h3>
+                  <GraficoTorta datos={datosOrigen} tamaño={220} />
+                </div>
               </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-6 mt-6">
-              <div>
-                <h3 className="text-sm font-semibold mb-3">Distribución por categoría</h3>
-                <GraficoTorta datos={datosCategoria} tamaño={220} />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold mb-3">Distribución por origen</h3>
-                <GraficoTorta datos={datosOrigen} tamaño={220} />
-              </div>
-            </div>
-            <div className="mt-4 grid md:grid-cols-2 gap-3 text-xs text-gray-600">
+
+            <div className="mt-6 grid sm:grid-cols-2 gap-3 text-xs text-gray-600 border-t pt-4">
               <p className="break-all"><strong>Hash datos:</strong> {evento.hash_datos || '-'}</p>
               <p className="break-all"><strong>Hash resultado:</strong> {evento.hash_resultado || '-'}</p>
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border shadow-sm">
+          <div className="bg-white p-4 rounded-lg border shadow-sm flex flex-col items-center lg:items-start text-center lg:text-left h-fit">
             <h2 className="font-semibold mb-3">QR público</h2>
             {publicUrl ? (
               <>
