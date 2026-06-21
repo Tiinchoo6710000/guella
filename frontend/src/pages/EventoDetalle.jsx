@@ -86,9 +86,13 @@ export default function PaginaEventoDetalle() {
   }
 
   async function manejarEliminarEvento() {
-    if (!confirm('¿Eliminar este evento y toda su información?')) return
-    await eliminarEvento(id)
-    navigate('/eventos')
+    if (!window.confirm('¿Eliminar este evento y toda su información?')) return
+    try {
+      await eliminarEvento(id)
+      navigate('/eventos')
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error al eliminar el evento')
+    }
   }
 
 
