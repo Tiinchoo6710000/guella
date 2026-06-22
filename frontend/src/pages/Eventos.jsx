@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import clienteApi from '../api/clienteApi'
 import TarjetaEvento from '../components/TarjetaEvento'
 import ModalCrearEvento from '../components/ModalCrearEvento'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 export default function PaginaEventos() {
   const [eventos, setEventos] = useState([])
@@ -35,7 +36,7 @@ export default function PaginaEventos() {
       </div>
 
       {cargando ? (
-        <p>Cargando eventos...</p>
+        <LoadingSpinner mensaje="Cargando eventos..." />
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {eventos.map((e) => (

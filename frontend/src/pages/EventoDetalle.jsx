@@ -9,6 +9,7 @@ import { obtenerMovilidadEvento } from '../api/movilidadApi'
 import GraficoBarras from '../components/GraficoBarras'
 import GraficoTorta from '../components/GraficoTorta'
 import { agruparPorCampo } from '../utilidades/agruparCalculo'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const API_BASE_URL = import.meta.env.VITE_API_RENDER || 'http://localhost:8000';
 
@@ -176,8 +177,8 @@ export default function PaginaEventoDetalle() {
       ? 'bg-amber-100 text-amber-800'
       : 'bg-emerald-100 text-emerald-800'
 
-  if (cargando) return <p>Cargando evento...</p>
-  if (!evento) return <p>No se pudo cargar el evento.</p>
+  if (cargando) return <LoadingSpinner mensaje="Cargando detalle del evento..." fullscreen />
+  if (!evento) return <p className="text-center p-8 text-gray-500 font-medium">No se pudo cargar el evento.</p>
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">

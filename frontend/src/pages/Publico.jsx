@@ -4,6 +4,7 @@ import clienteApi from '../api/clienteApi'
 import GraficoBarrasPublico from '../components/publico/GraficoBarrasPublico'
 import GraficoTortaPublico from '../components/publico/GraficoTortaPublico'
 import { agruparPorCampo } from '../utilidades/agruparCalculo'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 export default function PaginaPublica() {
   const { slug } = useParams()
@@ -134,12 +135,7 @@ export default function PaginaPublica() {
   }
 
   if (!datos) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-100 p-6">
-        <div className="w-12 h-12 rounded-full border-4 border-emerald-500/20 border-t-emerald-500 animate-spin"></div>
-        <p className="mt-4 text-sm text-slate-400 font-medium tracking-wide">Obteniendo reporte ambiental...</p>
-      </div>
-    )
+    return <LoadingSpinner mensaje="Obteniendo reporte ambiental..." oscuro fullscreen />;
   }
 
   return (

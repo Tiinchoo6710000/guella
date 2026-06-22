@@ -7,6 +7,7 @@ import GraficoTorta from '../components/GraficoTorta'
 import { obtenerEvento } from '../api/eventosApi'
 import { agruparPorCampo } from '../utilidades/agruparCalculo'
 import { obtenerTicketsEvento } from '../api/ticketsApi'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 export default function PaginaDetalleCalculoHistorico() {
   const { id, calculoId } = useParams()
@@ -81,8 +82,8 @@ export default function PaginaDetalleCalculoHistorico() {
 
   const publicUrl = evento?.public_slug ? `${window.location.origin}/public/${evento.public_slug}` : null
 
-  if (cargando) return <p>Cargando detalle de cálculo...</p>
-  if (!evento || !calculo) return <p>No se pudo cargar el detalle del cálculo.</p>
+  if (cargando) return <LoadingSpinner mensaje="Cargando historial de cálculo..." fullscreen />
+  if (!evento || !calculo) return <p className="text-center p-8 text-gray-500 font-medium">No se pudo cargar el detalle del cálculo.</p>
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">

@@ -3,6 +3,7 @@ import { obtenerFactores, crearFactor } from '../api/factoresApi'
 import clienteApi from '../api/clienteApi' // Mantenemos para eliminar por ahora
 import TarjetaFactor from '../components/TarjetaFactor'
 import ModalCrearFactor from '../components/ModalCrearFactor'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 export default function PaginaFactores() {
   const [factores, setFactores] = useState([])
@@ -95,7 +96,7 @@ export default function PaginaFactores() {
         </div>
       </div>
       {cargando ? (
-        <p>Cargando dimensiones...</p>
+        <LoadingSpinner mensaje="Cargando dimensiones..." />
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {factoresFiltrados.map((f) => (

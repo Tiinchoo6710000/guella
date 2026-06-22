@@ -11,6 +11,7 @@ import { obtenerEvento } from '../api/eventosApi'
 import ChecklistInput from '../components/ChecklistInput'
 import FormularioInput from '../components/FormularioInput'
 import FormularioMovilidad from '../components/FormularioMovilidad'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const TRANSPORTES_MOVILIDAD = ['auto', 'moto', 'bici', 'bus', 'tren', 'avion', 'caminata']
 
@@ -205,7 +206,7 @@ export default function PaginaCalculo() {
         </div>
       )}
 
-      {cargando ? <p>Cargando datos...</p> : (
+      {cargando ? <LoadingSpinner mensaje="Cargando datos de cálculo..." /> : (
         <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
           <section className="space-y-6">
             <div className="bg-white p-4 rounded-lg border shadow-sm">
