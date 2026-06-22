@@ -244,7 +244,7 @@ export default function PaginaCalculo() {
               <h2 className="text-lg font-bold text-gray-900 mb-3">Agregar datos de emisiones (Dimensiones)</h2>
               {dimensionesInputs.length === 0 ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-sm text-amber-900 shadow-sm">
-                  <p className="font-semibold">No hay dimensiones de input para la región {evento?.region}.</p>
+                  <p className="font-semibold">No hay dimensiones de aporte para la región {evento?.region}.</p>
                   <p className="mt-1 opacity-80">Cargá dimensiones en la sección Dimensiones usando exactamente la misma región que el evento.</p>
                 </div>
               ) : (
@@ -254,7 +254,7 @@ export default function PaginaCalculo() {
 
             {/* Lista verificable de inputs */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-3">Lista verificable de inputs</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-3">Lista verificable de aportes</h2>
               {inputs.length === 0 ? (
                 <p className="text-sm text-gray-500 bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl p-6 text-center">No hay inputs cargados.</p>
               ) : (
@@ -297,9 +297,8 @@ export default function PaginaCalculo() {
                             <span className="text-xs text-gray-600 font-medium">{item.distancia} km</span>
                             <span className="text-xs text-gray-400">•</span>
                             <span className="text-xs text-gray-600 font-medium">{item.cantidad_empleados} {item.cantidad_empleados === 1 ? 'persona' : 'personas'}</span>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                              esReal ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
-                            }`}>
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${esReal ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+                              }`}>
                               {esReal ? 'Verificado' : 'Estimado'}
                             </span>
                           </div>
