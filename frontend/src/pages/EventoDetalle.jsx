@@ -2,12 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import { eliminarCalculo, obtenerDetalleCalculo } from '../api/calculosApi'
-import { crearEvidencia, obtenerEvidenciasEvento } from '../api/evidenciasApi'
+import { crearEvidencia, obtenerEvidenciasEvento, subirArchivoEvidencia, eliminarEvidencia } from '../api/evidenciasApi'
 import { eliminarEvento, obtenerCalculosEvento, obtenerEvento } from '../api/eventosApi'
 import { obtenerInputsEvento } from '../api/inputsApi'
+import { obtenerMovilidadEvento } from '../api/movilidadApi'
 import GraficoBarras from '../components/GraficoBarras'
 import GraficoTorta from '../components/GraficoTorta'
 import { agruparPorCampo } from '../utilidades/agruparCalculo'
+
+const API_BASE_URL = import.meta.env.VITE_API_RENDER || 'http://localhost:8000';
 
 export default function PaginaEventoDetalle() {
   const { id } = useParams()
@@ -17,23 +20,29 @@ export default function PaginaEventoDetalle() {
   const [detalleActivo, setDetalleActivo] = useState([])
   const [evidencias, setEvidencias] = useState([])
   const [inputs, setInputs] = useState([])
-  const [evidencia, setEvidencia] = useState({ filename: '', url: '', tipo: 'pdf' })
+  const [movilidades, setMovilidades] = useState([])
+  const [archivo, setArchivo] = useState(null)
+  const [nombreEvidencia, setNombreEvidencia] = useState('')
+  const [dimensionSeleccionada, setDimensionSeleccionada] = useState('')
+  const [subiendo, setSubiendo] = useState(false)
   const [cargando, setCargando] = useState(true)
   const [tabActiva, setTabActiva] = useState('categoria')
 
   const cargar = useCallback(async function cargar() {
     try {
-      const [rEvento, rCalculos, rEvidencias, rInputs] = await Promise.all([
+      const [rEvento, rCalculos, rEvidencias, rInputs, rMovilidades] = await Promise.all([
         obtenerEvento(id),
         obtenerCalculosEvento(id),
         obtenerEvidenciasEvento(id),
-        obtenerInputsEvento(id)
+        obtenerInputsEvento(id),
+        obtenerMovilidadEvento(id)
       ])
 
       setEvento(rEvento.data)
       setCalculos(rCalculos.data || [])
       setEvidencias(rEvidencias.data || [])
       setInputs(rInputs.data || [])
+      setMovilidades(rMovilidades.data || [])
 
       const actual = rEvento.data.calculo_actual
       if (actual?.id) {
@@ -53,26 +62,81 @@ export default function PaginaEventoDetalle() {
     cargar()
   }, [cargar])
 
+  // Dimensiones de aportes (inputs) para asociar la evidencia
+  const dimensionesSeleccionables = useMemo(() => {
+    return inputs.map(inp => ({
+      id: `input-${inp.id}`,
+      label: `${inp.categoria} - ${inp.subcategoria || inp.subtipo || ''}`
+    }))
+  }, [inputs])
+
+  const manejarCambioArchivo = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setArchivo(file)
+      // Rellenar automáticamente el nombre con el del archivo si está vacío
+      if (!nombreEvidencia) {
+        setNombreEvidencia(file.name)
+      }
+    }
+  }
+
   async function manejarCrearEvidencia(e) {
     e.preventDefault()
 
-    if (!evento?.calculo_actual?.id) {
-      alert('Primero debes generar un cálculo activo para asociar la evidencia')
+    if (!archivo) {
+      alert('Por favor selecciona un archivo.')
       return
     }
 
+    setSubiendo(true)
     try {
+      // 1. Subir archivo al backend
+      const formData = new FormData()
+      formData.append('file', archivo)
+
+      const resUpload = await subirArchivoEvidencia(formData)
+      const { url, filename: originalFilename } = resUpload.data
+
+      // Detectar extensión del archivo
+      const extension = originalFilename.split('.').pop() || 'pdf'
+
+      const nombreFinal = dimensionSeleccionada
+        ? `[${dimensionSeleccionada}] ${nombreEvidencia || originalFilename}`
+        : (nombreEvidencia || originalFilename)
+
+      // 2. Crear registro de evidencia en la base de datos
       await crearEvidencia({
         evento_id: Number(id),
-        calculo_id: evento.calculo_actual.id,
-        filename: evidencia.filename,
-        url: evidencia.url,
-        tipo: evidencia.tipo
+        calculo_id: evento.calculo_actual?.id || null, // Opcional
+        filename: nombreFinal,
+        url: url,
+        tipo: extension
       })
-      setEvidencia({ filename: '', url: '', tipo: 'pdf' })
+
+      // Limpiar formulario
+      setArchivo(null)
+      setNombreEvidencia('')
+      setDimensionSeleccionada('')
+      // Limpiar input file del DOM
+      const fileInput = document.getElementById('file-upload-input')
+      if (fileInput) fileInput.value = ''
+
       await cargar()
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error creando evidencia')
+      alert(err.response?.data?.detail || 'Error cargando la evidencia')
+    } finally {
+      setSubiendo(false)
+    }
+  }
+
+  async function manejarEliminarEvidencia(evidenciaId) {
+    if (!window.confirm('¿Seguro que deseas eliminar esta evidencia?')) return
+    try {
+      await eliminarEvidencia(evidenciaId)
+      await cargar()
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error al eliminar la evidencia')
     }
   }
 
@@ -279,51 +343,90 @@ export default function PaginaEventoDetalle() {
         </div>
 
         <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <h2 className="font-semibold mb-3">Evidencias</h2>
-          <form onSubmit={manejarCrearEvidencia} className="grid gap-2 mb-4">
-            <input className="border p-2 rounded" placeholder="Nombre del archivo o evidencia" value={evidencia.filename} onChange={e => setEvidencia({ ...evidencia, filename: e.target.value })} required />
+          <h2 className="font-semibold mb-3">Evidencias del evento</h2>
+          <form onSubmit={manejarCrearEvidencia} className="grid gap-3 mb-5">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Tipo de factor/emisión (auditoría)</label>
-              <select className="border p-2 rounded w-full" value={evidencia.url} onChange={e => setEvidencia({ ...evidencia, url: e.target.value })} required>
-                <option value="">Seleccionar factor...</option>
-                {inputs.map(inp => (
-                  <option key={`${inp.categoria}-${inp.subcategoria}`} value={`${inp.categoria} - ${inp.subcategoria}`}>
-                    {inp.categoria} - {inp.subcategoria}
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Dimensión asociada (auditoría)</label>
+              <select 
+                className="border border-gray-200 p-2 rounded-lg w-full bg-gray-50 text-xs font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all cursor-pointer" 
+                value={dimensionSeleccionada} 
+                onChange={e => setDimensionSeleccionada(e.target.value)} 
+                required
+              >
+                <option value="">Seleccionar dimensión...</option>
+                {dimensionesSeleccionables.map(dim => (
+                  <option key={dim.id} value={dim.label}>
+                    {dim.label}
                   </option>
                 ))}
               </select>
             </div>
+
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Tipo de archivo</label>
-              <select className="border p-2 rounded w-full" value={evidencia.tipo} onChange={e => setEvidencia({ ...evidencia, tipo: e.target.value })}>
-                <optgroup label="📄 Documentos">
-                  <option value="pdf">PDF (.pdf)</option>
-                  <option value="doc">Word (.doc, .docx)</option>
-                  <option value="xls">Excel (.xls, .xlsx)</option>
-                  <option value="csv">CSV (.csv)</option>
-                </optgroup>
-                <optgroup label="🖼️ Imágenes">
-                  <option value="jpg">JPG (.jpg, .jpeg)</option>
-                  <option value="png">PNG (.png)</option>
-                  <option value="webp">WEBP (.webp)</option>
-                </optgroup>
-                <optgroup label="📦 Comprimidos">
-                  <option value="zip">ZIP (.zip)</option>
-                </optgroup>
-              </select>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Seleccionar Archivo (PDF, Word, Excel, CSV, JPG, PNG, WEBP, ZIP)</label>
+              <input 
+                id="file-upload-input"
+                type="file" 
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.jpg,.jpeg,.png,.webp,.zip"
+                onChange={manejarCambioArchivo}
+                className="border border-gray-200 p-2 rounded-lg w-full bg-gray-50 text-xs text-gray-600 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all cursor-pointer"
+                required
+              />
             </div>
-            <p className="text-xs text-gray-500">Se asociará esta evidencia al cálculo activo.</p>
-            <button disabled={!evento?.calculo_actual} className="bg-emerald-600 text-white px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">Agregar evidencia</button>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Nombre de la evidencia</label>
+              <input 
+                className="border border-gray-200 p-2 rounded-lg w-full text-xs" 
+                placeholder="Nombre de la evidencia (opcional, usa el del archivo por defecto)" 
+                value={nombreEvidencia} 
+                onChange={e => setNombreEvidencia(e.target.value)} 
+              />
+            </div>
+
+            <p className="text-[10px] text-gray-400">La evidencia se guardará de forma segura en el servidor asociada a este evento.</p>
+            <button 
+              type="submit"
+              disabled={subiendo} 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm w-fit"
+            >
+              {subiendo ? 'Subiendo evidencia...' : 'Agregar evidencia'}
+            </button>
           </form>
+
           {evidencias.length === 0 ? <p className="text-sm text-gray-500">No hay evidencias cargadas.</p> : (
-            <ul className="space-y-2">
-              {evidencias.map(item => (
-                <li key={item.id} className="border rounded p-2 text-sm">
-                  <a className="font-medium text-indigo-600" href={item.url} target="_blank" rel="noreferrer">{item.filename}</a>
-                  <p className="text-gray-500">{item.tipo}</p>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Archivos subidos</p>
+              <ul className="space-y-2">
+                {evidencias.map(item => {
+                  const fullUrl = item.url.startsWith('/') ? `${API_BASE_URL}${item.url}` : item.url
+                  return (
+                    <li key={item.id} className="border border-gray-100 rounded-xl p-3 bg-gray-50/50 flex items-center justify-between gap-3 text-xs">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span className="text-[18px] select-none text-gray-400 shrink-0" aria-hidden="true">
+                          {['png', 'jpg', 'jpeg', 'webp'].includes(item.tipo.toLowerCase()) ? '🖼️' : '📄'}
+                        </span>
+                        <div className="min-w-0">
+                          <a className="font-bold text-indigo-600 hover:text-indigo-800 break-all" href={fullUrl} target="_blank" rel="noreferrer">
+                            {item.filename}
+                          </a>
+                          <p className="text-gray-400 text-[10px] mt-0.5 uppercase font-bold tracking-wider">{item.tipo}</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => manejarEliminarEvidencia(item.id)}
+                        className="text-red-500 hover:text-white bg-red-50 hover:bg-red-600 p-1.5 rounded-lg border border-red-100 hover:border-red-600 transition-all duration-200 shadow-sm shrink-0 cursor-pointer"
+                        title="Eliminar evidencia"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
           )}
         </div>
       </section>
