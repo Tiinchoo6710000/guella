@@ -240,9 +240,9 @@ export default function PaginaCalculo() {
               {inputs.length === 0 ? <p className="text-sm text-gray-500">No hay inputs cargados.</p> : (
                 <div className="grid grid-cols-2 gap-3">
                   {inputs.map(input => (
-                    <div key={input.id} className="flex items-center justify-between gap-2 border rounded-lg p-2.5 bg-gray-50/50 shadow-sm">
+                    <div key={input.id} className="flex items-start sm:items-center justify-between gap-2 border border-gray-100 rounded-xl p-3 bg-gray-50/50 shadow-sm">
                       <div className="flex-1 min-w-0"><ChecklistInput input={input} /></div>
-                      <button onClick={() => manejarEliminarInput(input.id)} className="text-red-600 text-sm font-medium shrink-0">Eliminar</button>
+                      <button onClick={() => manejarEliminarInput(input.id)} className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-semibold shrink-0 self-start sm:self-auto bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg border border-red-100 transition-colors">Eliminar</button>
                     </div>
                   ))}
                 </div>
@@ -265,9 +265,8 @@ export default function PaginaCalculo() {
                             <span className="text-xs text-gray-600">{item.distancia} km</span>
                             <span className="text-xs text-gray-500">•</span>
                             <span className="text-xs text-gray-600">{item.cantidad_empleados} {item.cantidad_empleados === 1 ? 'persona' : 'personas'}</span>
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                              esReal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                            }`}>
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${esReal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
                               {esReal ? 'Verificado' : 'Estimado'}
                             </span>
                           </div>
