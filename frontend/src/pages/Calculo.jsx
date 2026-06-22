@@ -177,22 +177,22 @@ export default function PaginaCalculo() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-950">Calcular evento</h1>
           <p className="text-sm text-gray-600">
             {evento?.nombre ? `${evento.nombre} · Región: ${evento.region}` : 'Carga datos, verifica la lista y calcula el resultado en kgCO2e.'}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-3">
           <button
             type="button"
             onClick={() => cargarDatos()}
-            className="text-sm border border-gray-300 px-3 py-2 rounded hover:bg-gray-50"
+            className="w-full sm:w-auto text-center text-sm border border-gray-300 px-3 py-2 rounded hover:bg-gray-50 font-medium"
           >
             Actualizar listas
           </button>
-          <Link to={`/eventos/${id}`} className="text-indigo-600 font-medium">Volver al evento</Link>
+          <Link to={`/eventos/${id}`} className="w-full sm:w-auto text-center text-indigo-600 font-medium border border-transparent px-3 py-2">Volver al evento</Link>
         </div>
       </div>
 
@@ -238,11 +238,11 @@ export default function PaginaCalculo() {
             <div>
               <h2 className="font-semibold mb-2">Lista verificable de inputs</h2>
               {inputs.length === 0 ? <p className="text-sm text-gray-500">No hay inputs cargados.</p> : (
-                <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-3">
                   {inputs.map(input => (
-                    <div key={input.id} className="flex items-center gap-2">
-                      <div className="flex-1"><ChecklistInput input={input} /></div>
-                      <button onClick={() => manejarEliminarInput(input.id)} className="text-red-600 text-sm font-medium">Eliminar</button>
+                    <div key={input.id} className="flex items-center justify-between gap-2 border rounded-lg p-2.5 bg-gray-50/50 shadow-sm">
+                      <div className="flex-1 min-w-0"><ChecklistInput input={input} /></div>
+                      <button onClick={() => manejarEliminarInput(input.id)} className="text-red-600 text-sm font-medium shrink-0">Eliminar</button>
                     </div>
                   ))}
                 </div>
@@ -254,12 +254,33 @@ export default function PaginaCalculo() {
               <FormularioMovilidad onCreado={manejarCrearMovilidad} eventoId={id} />
               {movilidad.length === 0 ? <p className="mt-2 text-sm text-gray-500">No hay movilidad registrada.</p> : (
                 <ul className="mt-3 space-y-2">
-                  {movilidad.map(item => (
-                    <li key={item.id} className="bg-white p-3 rounded-lg border shadow-sm flex justify-between gap-3">
-                      <span>{item.transporte} - {item.distancia} km - {item.cantidad_empleados} personas - {item.tipo_fuente}</span>
-                      <button onClick={() => manejarEliminarMovilidad(item.id)} className="text-red-600 text-sm font-medium">Eliminar</button>
-                    </li>
-                  ))}
+                  {movilidad.map(item => {
+                    const esReal = item.tipo_fuente === 'real' || item.tipo_fuente === 'verificado'
+                    return (
+                      <li key={item.id} className="bg-white p-3 rounded-lg border shadow-sm flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold capitalize text-sm text-gray-900">{item.transporte}</span>
+                            <span className="text-xs text-gray-500">•</span>
+                            <span className="text-xs text-gray-600">{item.distancia} km</span>
+                            <span className="text-xs text-gray-500">•</span>
+                            <span className="text-xs text-gray-600">{item.cantidad_empleados} {item.cantidad_empleados === 1 ? 'persona' : 'personas'}</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                              esReal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {esReal ? 'Verificado' : 'Estimado'}
+                            </span>
+                          </div>
+                          {item.comentario && (
+                            <p className="text-xs text-gray-400 italic mt-1 truncate" title={item.comentario}>
+                              "{item.comentario}"
+                            </p>
+                          )}
+                        </div>
+                        <button onClick={() => manejarEliminarMovilidad(item.id)} className="text-red-600 text-sm font-medium shrink-0">Eliminar</button>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
             </div>
@@ -269,14 +290,14 @@ export default function PaginaCalculo() {
             <div className="bg-white p-4 rounded-lg border shadow-sm">
               <h2 className="font-semibold mb-2">Tickets recibidos por webhook</h2>
               {tickets.length === 0 ? <p className="text-sm text-gray-500">No hay tickets cargados.</p> : (
-                <ul className="space-y-2 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-sm">
                   {tickets.map(ticket => (
-                    <li key={ticket.id} className="border rounded p-2">
-                      <strong>{ticket.ticket_id}</strong>
-                      <span className="text-gray-600"> - {ticket.movilidades?.length || 0} movilidades</span>
-                    </li>
+                    <div key={ticket.id} className="border rounded-lg p-2.5 bg-gray-50/50 shadow-sm flex flex-col justify-center">
+                      <strong className="text-gray-900">{ticket.ticket_id}</strong>
+                      <span className="text-xs text-gray-500 mt-1">{ticket.movilidades?.length || 0} movilidades</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
             </div>
 
