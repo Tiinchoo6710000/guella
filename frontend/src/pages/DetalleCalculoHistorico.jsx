@@ -87,16 +87,44 @@ export default function PaginaDetalleCalculoHistorico() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
+      {/* Breadcrumb de navegación */}
+      <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+        <Link to="/eventos" className="hover:text-indigo-600 transition-colors">Eventos</Link>
+        <span className="text-gray-300">/</span>
+        <Link to={`/eventos/${id}`} className="hover:text-indigo-600 transition-colors">{evento.nombre}</Link>
+        <span className="text-gray-300">/</span>
+        <span className="text-gray-500">Cálculo v{calculo.version}</span>
+      </div>
+
       {/* Header Row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-950">Detalle de cálculo</h1>
-          <p className="text-gray-600">Evento {evento.nombre} · Cálculo v{calculo.version}</p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-gray-100">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">Detalle de cálculo</h1>
+          <p className="text-sm text-gray-500">
+            Historial de cálculos de <span className="font-semibold text-gray-700">{evento.nombre}</span>
+          </p>
         </div>
-        <div className="flex w-full sm:w-auto gap-2">
-          <button onClick={() => navigate(`/eventos/${id}`)} className="flex-1 sm:flex-initial border border-gray-200 text-gray-700 px-3 py-2 rounded text-center font-medium">Volver al evento</button>
+        <div className="flex w-full md:w-auto items-center gap-3">
+          <button
+            onClick={() => navigate(`/eventos/${id}`)}
+            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50/50 hover:border-indigo-200 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all duration-200 cursor-pointer"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Volver al evento</span>
+          </button>
           {publicUrl && (
-            <a href={publicUrl} className="flex-1 sm:flex-initial bg-indigo-600 text-white px-3 py-2 rounded text-center font-medium">Ver público</a>
+            <a
+              href={publicUrl}
+              className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>Ver público</span>
+            </a>
           )}
         </div>
       </div>
@@ -107,7 +135,6 @@ export default function PaginaDetalleCalculoHistorico() {
           <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
             Resumen
           </span>
-
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-gray-500">
           <div className="flex items-center gap-1.5">
@@ -125,22 +152,80 @@ export default function PaginaDetalleCalculoHistorico() {
         </div>
       </div>
 
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <p className="text-sm text-gray-500">Versión</p>
-          <p className="text-2xl font-bold">v{calculo.version}</p>
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Card 1: Versión */}
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+          <div className="p-2 sm:p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 w-fit mx-auto sm:mx-0">
+            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div className="min-w-0 w-full sm:w-auto">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Versión</p>
+            <p className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">v{calculo.version}</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-500">Historial de versión</p>
+          </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <p className="text-sm text-gray-500">Total</p>
-          <p className="text-2xl font-bold">{Number(calculo.total).toFixed(2)} kgCO2e</p>
+
+        {/* Card 2: Total */}
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+          <div className="p-2 sm:p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 w-fit mx-auto sm:mx-0">
+            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+            </svg>
+          </div>
+          <div className="min-w-0 w-full sm:w-auto">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Huella total</p>
+            <p className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
+              {Number(calculo.total).toFixed(2)}
+              <span className="text-[10px] font-medium text-gray-400 ml-1">CO2e</span>
+            </p>
+            <p className="text-[9px] sm:text-[10px] text-gray-500">Emisión calculada</p>
+          </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <p className="text-sm text-gray-500">Estado</p>
-          <p className="text-2xl font-bold">{calculo.estado}</p>
+
+        {/* Card 3: Estado */}
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+          <div className={`p-2 sm:p-3 rounded-lg shrink-0 w-fit mx-auto sm:mx-0 ${
+            calculo.estado === 'Pendiente' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
+          }`}>
+            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div className="min-w-0 w-full sm:w-auto">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Estado</p>
+            <div className="mt-1 flex justify-center sm:justify-start">
+              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full ${
+                calculo.estado === 'Pendiente' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+              }`}>
+                {calculo.estado}
+              </span>
+            </div>
+            <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1">Progreso actual</p>
+          </div>
         </div>
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <p className="text-sm text-gray-500">Activo</p>
-          <p className="text-2xl font-bold">{calculo.es_actual ? 'Sí' : 'No'}</p>
+
+        {/* Card 4: Activo */}
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+          <div className={`p-2 sm:p-3 rounded-lg shrink-0 w-fit mx-auto sm:mx-0 ${
+            calculo.es_actual ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-400'
+          }`}>
+            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          </div>
+          <div className="min-w-0 w-full sm:w-auto">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Activo</p>
+            <div className="mt-1 flex justify-center sm:justify-start">
+              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full ${
+                calculo.es_actual ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {calculo.es_actual ? 'Sí (Activo)' : 'No (Histórico)'}
+              </span>
+            </div>
+            <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1">Cálculo de referencia</p>
+          </div>
         </div>
       </section>
 
