@@ -2,35 +2,48 @@ export default function ChecklistInput({ input }) {
   const esReal = input.tipo_fuente === 'real'
 
   return (
-    <div className="flex flex-col gap-1 w-full min-w-0">
-      {/* 1. Tipo (Categoría) */}
-      <div className="font-semibold text-xs sm:text-sm text-gray-900 break-words" title={input.categoria || 'Input'}>
-        {input.categoria || 'Input'}
+    <div className="flex flex-col gap-2.5 w-full min-w-0 text-left">
+      {/* Categoria / Tipo */}
+      <div>
+        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Tipo</span>
+        <div className="font-bold text-sm sm:text-base text-gray-900 truncate" title={input.categoria || 'Input'}>
+          {input.categoria || 'Input'}
+        </div>
       </div>
 
-      {/* 2. Subtipo (Subcategoría/Subtipo) */}
-      <div className="text-[11px] sm:text-xs text-gray-500 break-words" title={input.subcategoria || input.subtipo}>
-        {input.subcategoria || input.subtipo}
+      {/* Subtipo */}
+      <div>
+        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Subtipo</span>
+        <div className="text-xs sm:text-sm font-medium text-gray-600 truncate" title={input.subcategoria || input.subtipo}>
+          {input.subcategoria || input.subtipo}
+        </div>
       </div>
 
-      {/* 3. Valor */}
-      <div className="text-xs font-semibold text-gray-800 break-words mt-0.5" title={`${input.valor} ${input.unidad}`}>
-        {input.valor} <span className="text-[10px] sm:text-xs text-gray-500 font-normal">{input.unidad}</span>
+      {/* Valor */}
+      <div>
+        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Valor</span>
+        <div className="text-sm font-bold text-gray-800">
+          {input.valor} <span className="text-xs text-gray-500 font-normal">{input.unidad}</span>
+        </div>
       </div>
 
-      {/* 4. Estado (Real o Estimado) */}
-      <div className="mt-0.5">
-        <span className={`inline-block px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-bold ${
-          esReal ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+      {/* Tipo de dato */}
+      <div>
+        <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Tipo de dato</span>
+        <span className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mt-0.5 ${
+          esReal ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
         }`}>
           {esReal ? 'Real' : 'Estimado'}
         </span>
       </div>
 
-      {/* 5. Comentario */}
+      {/* Comentario */}
       {input.comentario && (
-        <div className="text-[11px] sm:text-xs text-gray-400 italic break-words mt-1.5 border-t border-gray-100/50 pt-1">
-          "{input.comentario}"
+        <div>
+          <span className="text-[9px] font-bold uppercase tracking-wider text-gray-400 block mb-0.5">Comentario</span>
+          <div className="text-[11px] sm:text-xs text-gray-500 bg-gray-50/80 border border-gray-150 p-2 rounded-lg italic mt-0.5 break-words">
+            "{input.comentario}"
+          </div>
         </div>
       )}
     </div>

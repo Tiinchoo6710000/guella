@@ -61,10 +61,14 @@ export default function FormularioInput({ dimensiones = [], onCreado, eventoId, 
   }
 
   return (
-    <form onSubmit={manejarSubmit} className="bg-white p-4 rounded-lg shadow-sm border space-y-3">
+    <form onSubmit={manejarSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Categoría / Subtipo</label>
-        <select value={indexSeleccionado} onChange={e => setIndexSeleccionado(e.target.value)} className="w-full border p-2 rounded">
+        <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Categoría / Subtipo</label>
+        <select
+          value={indexSeleccionado}
+          onChange={e => setIndexSeleccionado(e.target.value)}
+          className="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 px-3 py-2.5 rounded-xl text-sm transition-all outline-none text-gray-800 font-medium"
+        >
           {dimensionesUnicas.map((f, idx) => (
             <option key={`${f.categoria}-${f.subtipo}-${f.id}`} value={idx}>
               {`${f.categoria} / ${f.subtipo}`} ({f.unidad}) · v{f.version}
@@ -72,33 +76,56 @@ export default function FormularioInput({ dimensiones = [], onCreado, eventoId, 
           ))}
         </select>
         {evento?.region && (
-          <p className="text-sm text-emerald-600 mt-2">
+          <p className="text-xs text-emerald-600 mt-2 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
             Se aplicará automáticamente el factor de la región: <strong>{evento.region}</strong>
           </p>
         )}
       </div>
-      <div>
-        <label className="block text-sm font-medium mb-1">Valor</label>
-        <input className="w-full border p-2 rounded" type="number" step="0.01" min="0" value={valor} onChange={e => setValor(e.target.value)} />
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Valor</label>
+          <input
+            className="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 px-3 py-2 rounded-xl text-sm transition-all outline-none"
+            type="number"
+            step="0.01"
+            min="0"
+            value={valor}
+            onChange={e => setValor(e.target.value)}
+            placeholder="0.00"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Tipo de dato</label>
+          <select
+            className="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 px-3 py-2.5 rounded-xl text-sm transition-all outline-none text-gray-800 font-medium"
+            value={tipoFuente}
+            onChange={e => setTipoFuente(e.target.value)}
+          >
+            <option value="estimado">Estimado</option>
+            <option value="real">Real</option>
+          </select>
+        </div>
       </div>
+
       <div>
-        <label className="block text-sm font-medium mb-1">Tipo de dato</label>
-        <select className="w-full border p-2 rounded" value={tipoFuente} onChange={e => setTipoFuente(e.target.value)}>
-          <option value="estimado">Estimado</option>
-          <option value="real">Real</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="comentario" className="block text-sm font-medium text-gray-700">Comentario (opcional)</label>
+        <label htmlFor="comentario" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">Comentario (opcional)</label>
         <textarea
           id="comentario"
           name="comentario"
-          rows="3"
-          className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          value={comentario} onChange={e => setComentario(e.target.value)}></textarea>
+          rows="2"
+          className="w-full bg-gray-50 border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 px-3 py-2 rounded-xl text-sm transition-all outline-none"
+          value={comentario}
+          onChange={e => setComentario(e.target.value)}
+          placeholder="Notas adicionales sobre este input..."
+        ></textarea>
       </div>
-      <div className="flex justify-end">
-        <button className="bg-emerald-600 text-white px-3 py-2 rounded">Agregar input</button>
+
+      <div className="flex justify-end pt-2">
+        <button className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all duration-150">
+          Agregar input
+        </button>
       </div>
     </form>
   )
