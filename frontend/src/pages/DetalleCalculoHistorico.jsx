@@ -86,6 +86,7 @@ export default function PaginaDetalleCalculoHistorico() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
+      {/* Header Row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-950">Detalle de cálculo</h1>
@@ -96,6 +97,30 @@ export default function PaginaDetalleCalculoHistorico() {
           {publicUrl && (
             <a href={publicUrl} className="flex-1 sm:flex-initial bg-indigo-600 text-white px-3 py-2 rounded text-center font-medium">Ver público</a>
           )}
+        </div>
+      </div>
+
+      {/* Resumen del evento como barra horizontal descriptiva */}
+      <div className="bg-white p-3 sm:px-4 sm:py-3 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-600">
+        <div className="flex items-center gap-2">
+          <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Resumen
+          </span>
+
+        </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <span>📅</span>
+            <span>{evento.fecha}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span>📍</span>
+            <span>{evento.ciudad}, {evento.region}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span>👥</span>
+            <span className="font-medium text-gray-800">{evento.cantidad_asistentes?.toLocaleString()} asistentes</span>
+          </div>
         </div>
       </div>
 
@@ -118,7 +143,7 @@ export default function PaginaDetalleCalculoHistorico() {
         </div>
       </section>
 
-      <section className="grid lg:grid-cols-[1fr_320px] gap-6">
+      <section className="w-full">
         <div className="bg-white p-4 rounded-lg border shadow-sm">
           <h2 className="font-semibold mb-4 text-center md:text-left">Auditoría del cálculo</h2>
 
@@ -127,21 +152,19 @@ export default function PaginaDetalleCalculoHistorico() {
             <div className="flex p-1 bg-gray-100 border border-gray-200 rounded-xl">
               <button
                 onClick={() => setTabActiva('categoria')}
-                className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${
-                  tabActiva === 'categoria'
+                className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${tabActiva === 'categoria'
                     ? 'bg-white text-indigo-700 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 Por Categoría
               </button>
               <button
                 onClick={() => setTabActiva('origen')}
-                className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${
-                  tabActiva === 'origen'
+                className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${tabActiva === 'origen'
                     ? 'bg-white text-indigo-700 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'
-                }`}
+                  }`}
               >
                 Por Origen
               </button>
@@ -174,7 +197,7 @@ export default function PaginaDetalleCalculoHistorico() {
 
           {/* VISTA ESCRITORIO (Grid Completo) */}
           <div className="hidden md:block">
-            <div className="grid md:grid-cols-2 gap-9">
+            <div className="grid lg:grid-cols-2 gap-9">
               <div>
                 <h3 className="text-sm font-semibold mb-3">Emisiones por categoría</h3>
                 <GraficoBarras datos={datosCategoria} />
@@ -184,7 +207,7 @@ export default function PaginaDetalleCalculoHistorico() {
                 <GraficoBarras datos={datosOrigen} />
               </div>
             </div>
-            <div className="grid md:grid-cols-2 gap-6 mt-6">
+            <div className="grid lg:grid-cols-2 gap-6 mt-6">
               <div className="flex flex-col items-center">
                 <h3 className="text-sm font-semibold mb-3 w-full text-center">Distribución por categoría</h3>
                 <GraficoTorta datos={datosCategoria} tamaño={220} />
@@ -200,12 +223,6 @@ export default function PaginaDetalleCalculoHistorico() {
             <p className="break-all"><strong>Hash datos:</strong> {calculo.hash_datos || '-'}</p>
             <p className="break-all"><strong>Hash resultado:</strong> {calculo.hash_resultado || '-'}</p>
           </div>
-        </div>
-
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <h2 className="font-semibold mb-3">Resumen del evento</h2>
-          <p className="text-sm text-gray-500">{evento.fecha} · {evento.ciudad}, {evento.region}</p>
-          <p className="mt-3 text-sm text-gray-600">Asistentes: {evento.cantidad_asistentes}</p>
         </div>
       </section>
 
