@@ -4,7 +4,9 @@ import axios from 'axios';
 // En desarrollo local, import.meta.env.VITE_API_URL será undefined o la que definas en .env.development.
 // En Vercel, usará la variable de entorno VITE_API_URL que configures.
 // Si no está definida, puedes poner un fallback para desarrollo local si lo necesitas,
-// pero lo ideal es que siempre esté definida en el entorno (o en un archivo .env.development para desarrollo).
+// pero lo ideal es que siempre esté definida en el entorno (o en un archivo .env.development para desarrollo). 
+// Para desarrollo local, si no tienes VITE_API_RENDER configurado, usará 'http://localhost:8000',
+// que es donde esperamos que tu backend FastAPI esté corriendo.
 const API_BASE_URL = import.meta.env.VITE_API_RENDER || 'http://localhost:8000';
 
 const api = axios.create({

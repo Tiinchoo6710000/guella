@@ -7,7 +7,8 @@ import clienteApi from './clienteApi'
  */
 export const obtenerFactores = (eventoId = null) => {
   const params = eventoId != null && eventoId !== '' ? { evento_id: Number(eventoId) } : {}
-  return clienteApi.get('/factores', { params })
+  return clienteApi.get('/factores/', { params })
 }
 
-export const crearFactor = (payload) => clienteApi.post('/factores', payload) // Crear nueva Dimensión
+export const crearFactor = (payload) => clienteApi.post('/factores/', payload) // Crear nueva Dimensión
+

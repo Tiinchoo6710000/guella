@@ -75,7 +75,7 @@ export default function ModalCrearFactor({ onCerrar, onCreado }) {
         region,
         comentario
       }
-      const res = await clienteApi.post('/factores', payload)
+      const res = await clienteApi.post('/factores/', payload)
       if (onCreado) onCreado(res.data)
       onCerrar()
     } catch (err) {

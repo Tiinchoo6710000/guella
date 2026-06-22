@@ -75,17 +75,24 @@ export default function PaginaFactores() {
         </button>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Filtrar Dimensiones</label>
-        <select
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-          className="w-full sm:max-w-xs border rounded p-2"
-        >
-          {opcionesFiltro.map(option => (
-            <option key={option.value} value={option.value}>{option.label}</option>
-          ))}
-        </select>
+      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6 max-w-sm">
+        <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Filtrar Dimensiones</label>
+        <div className="relative">
+          <select
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-lg p-2.5 pl-3 pr-10 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-medium"
+          >
+            {opcionesFiltro.map(option => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
       {cargando ? (
         <p>Cargando dimensiones...</p>
