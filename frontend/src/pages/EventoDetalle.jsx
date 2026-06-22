@@ -261,10 +261,19 @@ export default function PaginaEventoDetalle() {
           </div>
           <div className="min-w-0 w-full sm:w-auto">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Estado</p>
-            <div className="mt-1 flex justify-center sm:justify-start">
+            <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-1">
               <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full ${estadoClases}`}>
                 {estado}
               </span>
+              {evento?.calculo_actual && (
+                <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full border ${
+                  evento.calculo_actual.estado === 'verificado'
+                    ? 'bg-green-50 text-green-700 border-green-200'
+                    : 'bg-amber-50 text-amber-700 border-amber-200'
+                }`}>
+                  {evento.calculo_actual.estado === 'verificado' ? 'Verificado' : 'Estimado'}
+                </span>
+              )}
             </div>
             <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1">Progreso actual</p>
           </div>

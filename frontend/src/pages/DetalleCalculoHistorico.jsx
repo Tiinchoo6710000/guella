@@ -186,20 +186,23 @@ export default function PaginaDetalleCalculoHistorico() {
 
         {/* Card 3: Estado */}
         <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
-          <div className={`p-2 sm:p-3 rounded-lg shrink-0 w-fit mx-auto sm:mx-0 ${
-            calculo.estado === 'Pendiente' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
-          }`}>
+          <div className="p-2 sm:p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 w-fit mx-auto sm:mx-0">
             <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div className="min-w-0 w-full sm:w-auto">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Estado</p>
-            <div className="mt-1 flex justify-center sm:justify-start">
-              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full ${
-                calculo.estado === 'Pendiente' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
+            <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-1">
+              <span className="inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Calculado
+              </span>
+              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full border ${
+                calculo.estado === 'verificado'
+                  ? 'bg-green-50 text-green-700 border-green-200'
+                  : 'bg-amber-50 text-amber-700 border-amber-200'
               }`}>
-                {calculo.estado}
+                {calculo.estado === 'verificado' ? 'Verificado' : 'Estimado'}
               </span>
             </div>
             <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1">Progreso actual</p>
