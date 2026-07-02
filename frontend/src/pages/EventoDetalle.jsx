@@ -398,15 +398,27 @@ export default function PaginaEventoDetalle() {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border shadow-sm flex flex-col items-center lg:items-start text-center lg:text-left h-fit">
-            <h2 className="font-semibold mb-3">QR público</h2>
+          <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-6 rounded-2xl border border-indigo-950 shadow-lg relative overflow-hidden h-fit flex flex-col items-center text-center">
+            <div className="absolute right-0 top-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl"></div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-4 w-full text-center">QR público</h3>
             {publicUrl ? (
-              <>
-                <QRCodeSVG value={publicUrl} size={160} />
-                <a href={`/public/${evento.public_slug}`} className="block mt-3 text-indigo-600 font-medium">Abrir página pública</a>
-              </>
+              <div className="flex flex-col items-center w-full">
+                <div className="bg-white p-2 rounded-xl shadow-inner">
+                  <QRCodeSVG value={publicUrl} size={128} />
+                </div>
+                <a
+                  className="mt-4 w-full text-center text-xs font-semibold bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg border border-white/10 transition-colors"
+                  href={`/public/${evento.public_slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Abrir página pública
+                </a>
+              </div>
             ) : (
-              <p className="text-sm text-gray-500">El QR se genera después del primer cálculo.</p>
+              <p className="text-xs text-indigo-200 opacity-80 mt-2">
+                El QR se genera después del primer cálculo.
+              </p>
             )}
           </div>
         </section>

@@ -55,7 +55,7 @@ export default function PaginaPublica() {
     const animar = (now) => {
       const transcurrido = now - startTime
       const progreso = Math.min(transcurrido / duracion, 1)
-      
+
       setTotalAnimado(progreso * totalNum)
 
       if (progreso < 1) {
@@ -180,25 +180,33 @@ export default function PaginaPublica() {
 
       {/* Grid General */}
       <div className="grid lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* COLUMNA IZQUIERDA: Métrica e Interactivos (Lg: 5/12 cols) */}
         <section className="lg:col-span-5 space-y-6">
-          
+
           {/* Tarjeta de Huella de Carbono */}
           <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 md:p-8 text-center relative overflow-hidden shadow-xl">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-[60px] pointer-events-none" />
             <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Huella de Carbono Total</p>
-            
-            <div className="my-6 inline-flex flex-col items-center justify-center p-8 w-56 h-56 rounded-full border border-emerald-500/20 bg-emerald-500/[0.02] shadow-[inset_0_0_30px_rgba(16,185,129,0.05),0_0_30px_rgba(16,185,129,0.05)] relative group">
-              <span className="text-4xl md:text-5xl font-black text-white font-mono tracking-tighter transition-all duration-300 group-hover:scale-105">
+
+            <div className="my-6 inline-flex flex-col items-center justify-center p-8 w-56 h-56 rounded-full border border-emerald-500/30 bg-emerald-500/[0.04] shadow-[inset_0_0_40px_rgba(16,185,129,0.15),0_0_40px_rgba(16,185,129,0.2)] hover:shadow-[inset_0_0_50px_rgba(16,185,129,0.25),0_0_50px_rgba(16,185,129,0.35)] transition-all duration-500 relative group">
+              {/* Soft pulsing aura glow background */}
+              <div className="absolute -inset-1 rounded-full bg-emerald-600/10 blur-xl animate-pulse pointer-events-none group-hover:bg-emerald-200/20" />
+
+              <span className="text-4xl md:text-5xl font-black text-white font-mono tracking-tighter transition-all duration-300 group-hover:scale-105 z-10">
                 {totalAnimado.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
               </span>
-              <span className="text-emerald-400 font-bold text-xs uppercase tracking-widest mt-1.5">
+              <span className="text-emerald-400 font-bold text-xs uppercase tracking-widest mt-1.5 z-10">
                 kgCO2e
               </span>
-              <div className="absolute inset-0 rounded-full border border-emerald-500/40 animate-ping opacity-15 pointer-events-none" style={{ animationDuration: '3s' }} />
+
+              {/* Outer pulsing ring 1 */}
+              <div className="absolute inset-0 rounded-full border-2 border-emerald-500/40 animate-ping opacity-25 pointer-events-none" style={{ animationDuration: '1.5s' }} />
+
+              {/* Outer pulsing ring 2 (delayed for wave effect) */}
+              <div className="absolute inset-0 rounded-full border border-emerald-500/25 animate-ping opacity-20 pointer-events-none" style={{ animationDuration: '1.5s', animationDelay: '0.75s' }} />
             </div>
-            
+
             <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed mt-2">
               Esta métrica representa el impacto ambiental acumulado de todas las actividades logísticas, consumo energético e insumos del evento.
             </p>
@@ -212,7 +220,7 @@ export default function PaginaPublica() {
               </svg>
               Impacto en la vida real
             </h3>
-            
+
             {/* Botones de Control */}
             <div className="grid grid-cols-3 gap-2 mb-6">
               {Object.keys(equivalencias).map((key) => {
@@ -222,11 +230,10 @@ export default function PaginaPublica() {
                   <button
                     key={key}
                     onClick={() => setEquivalenciaActiva(key)}
-                    className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all duration-300 cursor-pointer outline-none focus:ring-1 focus:ring-slate-700 ${
-                      esActivo
-                        ? 'bg-slate-800/80 border-slate-700 text-white font-semibold shadow-md scale-[1.02]'
-                        : 'bg-slate-950/40 border-slate-900/50 text-slate-500 hover:text-slate-300 hover:border-slate-800'
-                    }`}
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all duration-300 cursor-pointer outline-none focus:ring-1 focus:ring-slate-700 ${esActivo
+                      ? 'bg-slate-800/80 border-slate-700 text-white font-semibold shadow-md scale-[1.02]'
+                      : 'bg-slate-950/40 border-slate-900/50 text-slate-500 hover:text-slate-300 hover:border-slate-800'
+                      }`}
                   >
                     <span className={`transition-transform duration-300 ${esActivo ? 'scale-110' : 'opacity-70'}`}>
                       {eq.icono}
@@ -247,7 +254,7 @@ export default function PaginaPublica() {
               <h4 className="font-bold text-sm uppercase tracking-wider text-slate-200">
                 {equiv.titulo}
               </h4>
-              
+
               <div className="flex items-baseline gap-2 mt-3">
                 <span className="text-3xl md:text-4xl font-extrabold font-mono text-white tracking-tight">
                   {equiv.valor.toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -256,7 +263,7 @@ export default function PaginaPublica() {
                   {equiv.unidad}
                 </span>
               </div>
-              
+
               <p className="text-xs text-slate-300 leading-relaxed mt-3 border-t border-slate-800/50 pt-3">
                 {equiv.descripcion}
               </p>
@@ -273,26 +280,24 @@ export default function PaginaPublica() {
 
           {/* VISTA MÓVIL (Con pestañas de categorías vs orígenes) */}
           <div className="md:hidden space-y-4">
-            
+
             {/* Selector de Pestañas Móvil */}
             <div className="flex p-1 bg-slate-900/80 border border-slate-800/60 rounded-xl">
               <button
                 onClick={() => setTabActiva('categoria')}
-                className={`flex-1 py-2.5 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${
-                  tabActiva === 'categoria'
-                    ? 'bg-slate-800 text-white shadow'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
+                className={`flex-1 py-2.5 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${tabActiva === 'categoria'
+                  ? 'bg-slate-800 text-white shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+                  }`}
               >
                 Por Categoría
               </button>
               <button
                 onClick={() => setTabActiva('origen')}
-                className={`flex-1 py-2.5 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${
-                  tabActiva === 'origen'
-                    ? 'bg-slate-800 text-white shadow'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
+                className={`flex-1 py-2.5 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${tabActiva === 'origen'
+                  ? 'bg-slate-800 text-white shadow'
+                  : 'text-slate-400 hover:text-slate-200'
+                  }`}
               >
                 Por Origen
               </button>
@@ -338,14 +343,14 @@ export default function PaginaPublica() {
 
           {/* VISTA ESCRITORIO / TABLET (Grid Completo - Sin Pestañas) */}
           <div className="hidden md:grid gap-6">
-            
+
             {/* Sección Categorías */}
             <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 shadow-xl">
               <h3 className="font-bold text-base text-slate-100 mb-6 flex items-center gap-2 pb-3 border-b border-slate-800/50">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 Auditoría por Categoría de Impacto
               </h3>
-              
+
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Carga total</h4>
@@ -364,7 +369,7 @@ export default function PaginaPublica() {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 Auditoría por Origen de la Emisión
               </h3>
-              
+
               <div className="grid md:grid-cols-2 gap-8 items-center">
                 <div>
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Carga total</h4>
@@ -378,7 +383,7 @@ export default function PaginaPublica() {
             </div>
 
           </div>
-          
+
         </section>
 
       </div>
