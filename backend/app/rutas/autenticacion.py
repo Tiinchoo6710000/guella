@@ -30,6 +30,12 @@ def login(datos: UsuarioLogin, db: Session = Depends(obtener_db)):
     if not usuario or not verificar_password(datos.password, usuario.contrasena_hash):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
+    if hasattr(usuario, "activo") and usuario.activo is False:
+        raise HTTPException(
+            status_code=401,
+            detail="Tu cuenta se encuentra desactivada. Contacta al administrador de Güella."
+        )
+
     token = crear_token({
         "id": usuario.id,
         "rol": usuario.rol,
@@ -80,10 +86,10 @@ async def forgot_password(datos: ForgotPasswordRequest, db: Session = Depends(ob
     email = datos.email.strip().lower()
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
 
-    if not usuario:
+    if not usuario or (hasattr(usuario, "activo") and usuario.activo is False):
         raise HTTPException(
             status_code=404,
-            detail="El correo electrónico ingresado no se encuentra registrado en Güella."
+            detail="El correo electrónico ingresado no se encuentra disponible o la cuenta está desactivada."
         )
 
     token = secrets.token_urlsafe(32)

@@ -132,7 +132,7 @@ export default function PaginaEventos() {
               placeholder="Buscar evento por nombre..."
               value={filtroBusqueda}
               onChange={(e) => setFiltroBusqueda(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 text-gray-950 rounded-xl p-2.5 pl-9 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all font-medium placeholder-gray-400"
+              className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-9 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all font-normal placeholder-gray-400"
             />
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export default function PaginaEventos() {
           {tieneFiltrosActivos && (
             <button
               onClick={restablecerFiltros}
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors shrink-0 flex items-center gap-1 cursor-pointer w-full md:w-auto justify-end"
+              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 transition-colors shrink-0 flex items-center gap-1 cursor-pointer w-full md:w-auto justify-end"
             >
               Restablecer filtros
             </button>
@@ -156,12 +156,12 @@ export default function PaginaEventos() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 border-t border-gray-100 pt-3">
           {/* Productor */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Productor</label>
+            <label className="block text-[11px] font-medium text-gray-500">Productor</label>
             <div className="relative">
               <select
                 value={filtroProductor}
                 onChange={(e) => setFiltroProductor(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todos los productores</option>
                 {productoresDisponibles.map(p => (
@@ -178,12 +178,12 @@ export default function PaginaEventos() {
 
           {/* Orden de Carga */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Orden de carga</label>
+            <label className="block text-[11px] font-medium text-gray-500">Orden de carga</label>
             <div className="relative">
               <select
                 value={ordenCarga}
                 onChange={(e) => setOrdenCarga(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="recientes">Últimos cargados (Recientes)</option>
                 <option value="antiguos">Primeros cargados (Antiguos)</option>
@@ -198,12 +198,12 @@ export default function PaginaEventos() {
 
           {/* Región */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Región</label>
+            <label className="block text-[11px] font-medium text-gray-500">Región</label>
             <div className="relative">
               <select
                 value={filtroRegion}
                 onChange={(e) => setFiltroRegion(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todas las regiones</option>
                 {regionesDisponibles.map(r => (
@@ -220,12 +220,12 @@ export default function PaginaEventos() {
 
           {/* Asistentes */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Asistentes</label>
+            <label className="block text-[11px] font-medium text-gray-500">Asistentes</label>
             <div className="relative">
               <select
                 value={filtroAsistentes}
                 onChange={(e) => setFiltroAsistentes(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Cualquier tamaño</option>
                 <option value="p">Pequeños (&lt; 500)</option>
@@ -242,12 +242,12 @@ export default function PaginaEventos() {
 
           {/* Ordenar por Cálculo */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ordenar huella</label>
+            <label className="block text-[11px] font-medium text-gray-500">Ordenar huella</label>
             <div className="relative">
               <select
                 value={ordenarCalculo}
                 onChange={(e) => setOrdenarCalculo(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Sin ordenar por huella</option>
                 <option value="mayor_menor">Mayor a menor huella</option>

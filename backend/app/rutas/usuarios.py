@@ -19,6 +19,7 @@ def serializar_usuario(usuario, cantidad_eventos: int = 0):
         "nombre": usuario.nombre,
         "email": usuario.email,
         "rol": usuario.rol,
+        "activo": usuario.activo if hasattr(usuario, "activo") and usuario.activo is not None else True,
         "debe_cambiar_password": usuario.debe_cambiar_password,
         "creado_en": usuario.creado_en.isoformat() if usuario.creado_en else None,
         "cantidad_eventos": cantidad_eventos,
@@ -77,6 +78,7 @@ def crear_productor(
         email=email,
         contrasena_hash=generar_hash_password(password),
         rol="productor",
+        activo=True,
         debe_cambiar_password=True,   # Fuerza cambio en primer ingreso
         creado_en=datetime.utcnow(),
     )
@@ -123,6 +125,30 @@ def editar_productor(
 
     cantidad_eventos = db.query(Evento).filter(Evento.usuario_id == usuario.id).count()
 
+    return serializar_usuario(usuario, cantidad_eventos)
+
+
+@router.patch("/{usuario_id}/estado")
+def alternar_estado_productor(
+    usuario_id: int,
+    db: Session = Depends(obtener_db),
+    usuario_actual: dict = Depends(obtener_usuario_actual)
+):
+    """Activa o desactiva la cuenta de un productor. Solo accesible para admin."""
+    verificar_admin(usuario_actual)
+
+    if usuario_actual.get("id") == usuario_id:
+        raise HTTPException(status_code=400, detail="No puedes desactivar tu propia cuenta de administrador")
+
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    usuario.activo = not usuario.activo
+    db.commit()
+    db.refresh(usuario)
+
+    cantidad_eventos = db.query(Evento).filter(Evento.usuario_id == usuario.id).count()
     return serializar_usuario(usuario, cantidad_eventos)
 
 

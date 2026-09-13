@@ -217,6 +217,8 @@ export default function PaginaUsuarios() {
   const [cargando, setCargando] = useState(true)
   const [abrirModal, setAbrirModal] = useState(false)
   const [productorAEditar, setProductorAEditar] = useState(null)
+  const [procesandoId, setProcesandoId] = useState(null)
+  const [mensajeEstado, setMensajeEstado] = useState('')
 
   useEffect(() => {
     cargar()
@@ -231,6 +233,28 @@ export default function PaginaUsuarios() {
       setProductores([])
     } finally {
       setCargando(false)
+    }
+  }
+
+  async function manejarAlternarEstado(productor) {
+    const estaActivo = productor.activo !== false
+    const accion = estaActivo ? 'desactivar' : 'activar'
+    const mensajeConfirm = estaActivo
+      ? `¿Estás seguro de que deseas desactivar la cuenta de ${productor.nombre}? El productor no podrá iniciar sesión pero todos sus datos y eventos se mantendrán intactos.`
+      : `¿Deseas activar nuevamente la cuenta de ${productor.nombre}? Podrá volver a iniciar sesión con normalidad.`
+
+    if (!window.confirm(mensajeConfirm)) return
+
+    setProcesandoId(productor.id)
+    try {
+      const res = await clienteApi.patch(`/usuarios/${productor.id}/estado`)
+      setProductores(prev => prev.map(p => p.id === productor.id ? res.data : p))
+      setMensajeEstado(`Cuenta de ${productor.nombre} ${res.data.activo ? 'activada' : 'desactivada'} correctamente.`)
+      setTimeout(() => setMensajeEstado(''), 4000)
+    } catch (err) {
+      alert(err.response?.data?.detail || `Error al ${accion} la cuenta.`)
+    } finally {
+      setProcesandoId(null)
     }
   }
 
@@ -253,6 +277,15 @@ export default function PaginaUsuarios() {
           Nuevo productor
         </button>
       </div>
+
+      {mensajeEstado && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold px-4 py-3 rounded-xl flex items-center gap-2 shadow-sm animate-fade-in">
+          <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{mensajeEstado}</span>
+        </div>
+      )}
 
       {/* Contenido */}
       {cargando ? (
@@ -282,20 +315,24 @@ export default function PaginaUsuarios() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {productores.map(p => (
-                <tr key={p.id} className="hover:bg-gray-50/50 transition-colors group">
+                <tr key={p.id} className={`hover:bg-gray-50/50 transition-colors group ${p.activo === false ? 'bg-gray-50/30 opacity-75' : ''}`}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center shrink-0">
-                        <span className="text-indigo-600 font-bold text-sm">{p.nombre.charAt(0).toUpperCase()}</span>
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                        p.activo === false 
+                          ? 'bg-gray-100 text-gray-400' 
+                          : 'bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600'
+                      }`}>
+                        <span className="font-bold text-sm">{p.nombre.charAt(0).toUpperCase()}</span>
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 leading-none">{p.nombre}</p>
+                        <p className={`font-semibold leading-none ${p.activo === false ? 'text-gray-500 line-through' : 'text-gray-900'}`}>{p.nombre}</p>
                         <p className="text-xs text-gray-400 mt-0.5 md:hidden">{p.email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 hidden md:table-cell">
-                    <span className="text-gray-600">{p.email}</span>
+                    <span className={p.activo === false ? 'text-gray-400' : 'text-gray-600'}>{p.email}</span>
                   </td>
                   <td className="px-6 py-4 hidden lg:table-cell">
                     <span className="text-gray-500 text-xs">{formatFecha(p.creado_en)}</span>
@@ -306,33 +343,68 @@ export default function PaginaUsuarios() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
-                    {p.debe_cambiar_password ? (
-                      <span className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    {p.activo === false ? (
+                      <span className="inline-flex items-center gap-1.5 bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1">
+                        <svg className="w-3 h-3 text-rose-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Desactivado
+                      </span>
+                    ) : p.debe_cambiar_password ? (
+                      <span className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1">
+                        <svg className="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Sin activar
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                          <circle cx="12" cy="12" r="4" />
+                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1">
+                        <svg className="w-2.5 h-2.5 fill-emerald-500" viewBox="0 0 24 24">
+                          <circle cx="12" cy="12" r="6" />
                         </svg>
                         Activo
                       </span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => setProductorAEditar(p)}
-                      className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer inline-flex items-center justify-center gap-1"
-                      title="Editar productor"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                      </svg>
-                      <span className="text-xs font-medium hidden sm:inline">Editar</span>
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => setProductorAEditar(p)}
+                        className="p-1.5 rounded-lg text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer inline-flex items-center justify-center gap-1"
+                        title="Editar productor"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                        </svg>
+                        <span className="text-xs font-medium hidden sm:inline">Editar</span>
+                      </button>
+
+                      {p.activo === false ? (
+                        <button
+                          onClick={() => manejarAlternarEstado(p)}
+                          disabled={procesandoId === p.id}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-colors cursor-pointer inline-flex items-center justify-center gap-1 text-xs font-semibold disabled:opacity-50"
+                          title="Activar cuenta"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                          </svg>
+                          <span>Activar</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => manejarAlternarEstado(p)}
+                          disabled={procesandoId === p.id}
+                          className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors cursor-pointer inline-flex items-center justify-center gap-1 text-xs font-semibold disabled:opacity-50"
+                          title="Desactivar cuenta"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                          </svg>
+                          <span>Desactivar</span>
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

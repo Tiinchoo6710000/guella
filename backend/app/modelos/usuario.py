@@ -11,6 +11,7 @@ class Usuario(Base):
     email = Column(String, unique=True, nullable=False)
     contrasena_hash = Column(String, nullable=False)
     rol = Column(String, default="productor")
+    activo = Column(Boolean, default=True, nullable=False)
     debe_cambiar_password = Column(Boolean, default=False, nullable=False)
     creado_en = Column(DateTime, default=datetime.utcnow, nullable=False)
 

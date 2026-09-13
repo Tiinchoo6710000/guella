@@ -118,12 +118,12 @@ export default function PaginaFactores() {
             <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
             </svg>
-            <h2 className="text-xs font-bold text-gray-700 uppercase tracking-wider">Filtros de dimensiones</h2>
+            <h2 className="text-xs font-medium text-gray-600">Filtros de dimensiones</h2>
           </div>
           {tieneFiltrosActivos && (
             <button
               onClick={restablecerFiltros}
-              className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1 cursor-pointer"
+              className="text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1 cursor-pointer"
             >
               Restablecer
             </button>
@@ -133,12 +133,12 @@ export default function PaginaFactores() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {/* Región */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Región</label>
+            <label className="block text-[11px] font-medium text-gray-500">Región</label>
             <div className="relative">
               <select
                 value={filtroRegion}
                 onChange={(e) => setFiltroRegion(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todas las regiones</option>
                 {regionesDisponibles.map(r => (
@@ -155,12 +155,12 @@ export default function PaginaFactores() {
 
           {/* Categoría */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Categoría</label>
+            <label className="block text-[11px] font-medium text-gray-500">Categoría</label>
             <div className="relative">
               <select
                 value={filtroCategoria}
                 onChange={(e) => setFiltroCategoria(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todas las categorías</option>
                 {categoriasDisponibles.map(c => (
@@ -177,12 +177,12 @@ export default function PaginaFactores() {
 
           {/* Versión */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Versión</label>
+            <label className="block text-[11px] font-medium text-gray-500">Versión</label>
             <div className="relative">
               <select
                 value={filtroVersion}
                 onChange={(e) => setFiltroVersion(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todas las versiones</option>
                 <option value="ultima">Última versión</option>
@@ -200,12 +200,12 @@ export default function PaginaFactores() {
 
           {/* Vigencia */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Vigencia (Año)</label>
+            <label className="block text-[11px] font-medium text-gray-500">Vigencia (Año)</label>
             <div className="relative">
               <select
                 value={filtroVigencia}
                 onChange={(e) => setFiltroVigencia(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todos los años</option>
                 {vigenciasDisponibles.map(v => (
@@ -222,12 +222,12 @@ export default function PaginaFactores() {
 
           {/* Fuente */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Fuente</label>
+            <label className="block text-[11px] font-medium text-gray-500">Fuente</label>
             <div className="relative">
               <select
                 value={filtroFuente}
                 onChange={(e) => setFiltroFuente(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-medium truncate"
+                className="w-full bg-gray-50/60 border border-gray-200 text-gray-700 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-emerald-500/10 focus:border-emerald-600 transition-all appearance-none cursor-pointer font-normal truncate"
               >
                 <option value="">Todas las fuentes</option>
                 {fuentesDisponibles.map(f => (
