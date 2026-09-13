@@ -397,73 +397,47 @@ export default function PaginaPublica() {
       </div>
 
       {/* SECCIÓN DE ACREDITACIÓN Y VERIFICACIÓN OFICIAL GÜELLA */}
-      <footer className="mt-12 md:mt-16 pt-8 border-t border-slate-800/80 max-w-4xl mx-auto">
-        <div className="bg-gradient-to-br from-slate-900/90 via-slate-900/50 to-emerald-950/30 border border-emerald-500/20 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+      <footer className="mt-12 md:mt-16 pt-8 border-t border-slate-800/80 max-w-3xl mx-auto">
+        <div className="bg-slate-900/60 border border-emerald-500/20 rounded-2xl p-6 sm:p-7 backdrop-blur-xl shadow-xl relative overflow-hidden">
           {/* Resplandor decorativo de fondo */}
-          <div className="absolute -top-24 -right-24 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-60 h-60 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 -right-20 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
             {/* Sello / Insignia de Güella */}
-            <div className="shrink-0 flex flex-col items-center">
-              <div className="relative group">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-emerald-600 p-[2px] shadow-lg shadow-emerald-500/25">
-                  <div className="w-full h-full bg-slate-950 rounded-[14px] flex flex-col items-center justify-center p-2">
-                    <span className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
-                      G
-                    </span>
-                    <span className="text-[7px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5">
-                      VERIFICADO
-                    </span>
-                  </div>
+            <div className="shrink-0 relative group">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-[2px] shadow-lg shadow-emerald-500/20">
+                <div className="w-full h-full bg-slate-950 rounded-[14px] flex flex-col items-center justify-center p-1.5">
+                  <span className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 leading-none">
+                    G
+                  </span>
+                  <span className="text-[6.5px] font-bold text-emerald-400 uppercase tracking-widest mt-1">
+                    VERIFICADO
+                  </span>
                 </div>
-                {/* Checkmark badge */}
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center shadow-md">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
+              </div>
+              {/* Checkmark badge */}
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center shadow-md">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
               </div>
             </div>
 
-            {/* Contenido descriptivo */}
-            <div className="flex-1 space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold tracking-wide uppercase">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                Acreditación y Certificación Ambiental
-              </div>
-
-              <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                Medición y Auditoría realizada por <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Güella MRV</span>
+            {/* Contenido descriptivo limpio */}
+            <div className="flex-1 space-y-1.5">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                Medición y Verificación realizada por <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">Güella</span>
               </h3>
-
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
-                Este reporte y los resultados de huella de carbono fueron calculados, validados y auditados bajo los protocolos y factores de emisión de la plataforma <strong>Güella</strong>. Los datos reflejan el compromiso verificable con la transparencia climática y la mitigación del impacto ambiental.
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Este reporte y los resultados de huella de carbono fueron calculados, auditados y validados por <strong>Güella</strong>, garantizando la precisión técnica y la trazabilidad de los datos ambientales del evento.
               </p>
-
-              {/* Pilares de verificación */}
-              <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3 text-[11px] sm:text-xs text-slate-400 font-medium">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/60 border border-slate-700/60 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Metodología MRV Internacional
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/60 border border-slate-700/60 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Factores de Emisión Auditados
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/60 border border-slate-700/60 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Trazabilidad de Alcance 1, 2 y 3
-                </span>
-              </div>
             </div>
           </div>
         </div>
 
         {/* Footer legal discreto */}
-        <div className="text-center mt-6 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-2">
+        <div className="text-center mt-6 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-2">
           <span>© {new Date().getFullYear()} Güella MRV Platform</span>
           <span className="hidden sm:inline">•</span>
           <span>Plataforma de Medición, Reporte y Verificación de Huella de Carbono</span>
