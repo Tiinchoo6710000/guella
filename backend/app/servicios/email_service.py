@@ -13,15 +13,22 @@ def obtener_config_mail():
     if not mail_from or "@" not in mail_from:
         mail_from = "noreply@guella.com"
         
+    port = int(os.getenv("MAIL_PORT", "587"))
+    ssl_tls_env = os.getenv("MAIL_SSL_TLS")
+    starttls_env = os.getenv("MAIL_STARTTLS")
+    
+    use_ssl = ssl_tls_env.lower() in ("true", "1", "yes") if ssl_tls_env is not None else (port == 465)
+    use_starttls = starttls_env.lower() in ("true", "1", "yes") if starttls_env is not None else (port != 465)
+
     return ConnectionConfig(
         MAIL_USERNAME=username,
         MAIL_PASSWORD=password,
         MAIL_FROM=mail_from,
         MAIL_FROM_NAME=os.getenv("MAIL_FROM_NAME", "Güella MRV").strip(),
-        MAIL_PORT=int(os.getenv("MAIL_PORT", "587")),
+        MAIL_PORT=port,
         MAIL_SERVER=os.getenv("MAIL_SERVER", "smtp.gmail.com").strip(),
-        MAIL_STARTTLS=True,
-        MAIL_SSL_TLS=False,
+        MAIL_STARTTLS=use_starttls,
+        MAIL_SSL_TLS=use_ssl,
         USE_CREDENTIALS=bool(username and password and "tu_email" not in username),
         VALIDATE_CERTS=True,
     )
@@ -92,12 +99,12 @@ async def enviar_email_reset_password(email: str, nombre: str, reset_url: str):
     print("=======================================================\n")
 
     config = obtener_config_mail()
-    # Si las credenciales son placeholders o no están configuradas, solo mostramos en consola
     username = os.getenv("MAIL_USERNAME", "")
     password = os.getenv("MAIL_PASSWORD", "")
     if not username or "tu_email" in username or not password or "tu_app_password" in password:
-        print("[INFO] Credenciales SMTP no configuradas en .env. El enlace fue impreso en consola arriba para pruebas locales.")
-        return
+        print("[AVISO] Variables MAIL_USERNAME o MAIL_PASSWORD no configuradas en el servidor de producción.")
+        print("[INFO] Por seguridad se imprimió el link arriba en los logs del servidor.")
+        return False
 
     html = Template(PLANTILLA_RESET).render(nombre=nombre, reset_url=reset_url)
 
@@ -111,8 +118,10 @@ async def enviar_email_reset_password(email: str, nombre: str, reset_url: str):
     try:
         fm = FastMail(config)
         await fm.send_message(mensaje)
-        print(f"[OK] Email de recuperacion enviado con exito a {email}")
+        print(f"[OK] Email de recuperación enviado con éxito a {email}")
+        return True
     except Exception as e:
-        print(f"[ERROR] Error al enviar email via SMTP: {e}")
-        print(f"[INFO] El link generado para pruebas es: {reset_url}")
+        print(f"[ERROR] Error al conectar/enviar con servidor SMTP ({config.MAIL_SERVER}:{config.MAIL_PORT}): {e}")
+        print(f"[INFO] El link generado es: {reset_url}")
+        raise e
 
