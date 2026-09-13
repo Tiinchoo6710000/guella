@@ -34,61 +34,68 @@ export default function TarjetaEvento({ evento }) {
           {evento.nombre}
         </h3>
 
-        {/* Metadata Details */}
-        <div className="space-y-1.5 text-[11px] sm:text-xs text-gray-500">
+        {/* Metadata Details Grid con estilo de chips */}
+        <div className="grid grid-cols-2 gap-2 my-2.5">
+          {/* Fecha */}
+          <div className="flex items-center gap-1.5 p-1.5 sm:p-2 bg-gray-50/80 rounded-lg border border-gray-100 min-w-0" title={`Fecha: ${evento.fecha}`}>
+            <span className="shrink-0 text-xs sm:text-sm">📅</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Fecha</p>
+              <p className="text-gray-800 font-semibold text-[11px] sm:text-xs truncate">{evento.fecha || '—'}</p>
+            </div>
+          </div>
+
           {/* Ubicación */}
-          <div className="flex items-center gap-1.5 min-w-0" title={`Ubicación: ${ubicacion}`}>
-            <span className="shrink-0 text-gray-400" aria-hidden="true">📍</span>
-            <span className="truncate">
-              <span className="text-gray-700 font-medium">{ubicacion}</span>
-            </span>
+          <div className="flex items-center gap-1.5 p-1.5 sm:p-2 bg-gray-50/80 rounded-lg border border-gray-100 min-w-0" title={`Ubicación: ${ubicacion}`}>
+            <span className="shrink-0 text-xs sm:text-sm">📍</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Ubicación</p>
+              <p className="text-gray-800 font-semibold text-[11px] sm:text-xs truncate">{ubicacion}</p>
+            </div>
           </div>
 
           {/* Región */}
-          <div className="flex items-center gap-1.5 min-w-0" title={`Región: ${evento.region || '—'}`}>
-            <span className="shrink-0 text-gray-400" aria-hidden="true">🌐</span>
-            <span className="truncate">
-              <span className="text-gray-400 font-normal mr-1">Región:</span>
-              <span className="text-gray-700 font-medium">{evento.region || '—'}</span>
-            </span>
+          <div className="flex items-center gap-1.5 p-1.5 sm:p-2 bg-gray-50/80 rounded-lg border border-gray-100 min-w-0" title={`Región: ${evento.region || '—'}`}>
+            <span className="shrink-0 text-xs sm:text-sm">🌐</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Región</p>
+              <p className="text-gray-800 font-semibold text-[11px] sm:text-xs truncate">{evento.region || '—'}</p>
+            </div>
           </div>
 
           {/* Productor */}
-          <div className="flex items-center gap-1.5 min-w-0" title={`Productor: ${productorNombre}`}>
-            <span className="shrink-0 text-gray-400" aria-hidden="true">👤</span>
-            <span className="truncate">
-              <span className="text-gray-400 font-normal mr-1">Productor:</span>
-              <span className="text-gray-700 font-medium">{productorNombre}</span>
-            </span>
-          </div>
-
-          {/* Fecha */}
-          <div className="flex items-center gap-1.5 min-w-0" title={`Fecha: ${evento.fecha}`}>
-            <span className="shrink-0 text-gray-400" aria-hidden="true">📅</span>
-            <span className="truncate text-gray-700 font-medium">{evento.fecha}</span>
+          <div className="flex items-center gap-1.5 p-1.5 sm:p-2 bg-gray-50/80 rounded-lg border border-gray-100 min-w-0" title={`Productor: ${productorNombre}`}>
+            <span className="shrink-0 text-xs sm:text-sm">👤</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Productor</p>
+              <p className="text-gray-800 font-semibold text-[11px] sm:text-xs truncate">{productorNombre}</p>
+            </div>
           </div>
 
           {/* Cantidad de Asistentes */}
-          <div className="flex items-center gap-1.5 min-w-0 pt-0.5" title={`Asistentes: ${evento.cantidad_asistentes}`}>
-            <span className="shrink-0 text-gray-400" aria-hidden="true">👥</span>
-            <span className="font-semibold text-gray-800 truncate">
-              {Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asistentes
-            </span>
+          <div className="col-span-2 flex items-center gap-1.5 p-1.5 sm:p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/70 min-w-0" title={`Asistentes: ${evento.cantidad_asistentes}`}>
+            <span className="shrink-0 text-xs sm:text-sm">👥</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-indigo-400 leading-none mb-0.5">Asistentes</p>
+              <p className="text-indigo-950 font-bold text-[11px] sm:text-xs truncate">
+                {Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asistentes
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Action Footer */}
       <div className="bg-gray-50/70 border-t border-gray-100 p-2 sm:p-2.5 flex gap-2">
-        <Link 
-          to={`/eventos/${evento.id}`} 
-          className="flex-1 text-center py-1.5 rounded-lg text-xs font-semibold text-indigo-600 bg-indigo-50/50 hover:bg-indigo-50 border border-transparent transition-colors"
+        <Link
+          to={`/eventos/${evento.id}`}
+          className="flex-1 text-center py-2 sm:py-1.5 rounded-lg text-xs font-semibold text-indigo-600 bg-indigo-50/70 hover:bg-indigo-100/70 active:bg-indigo-100 border border-transparent transition-colors flex items-center justify-center min-h-[36px]"
         >
-          Ver
+          Ver detalle
         </Link>
-        <Link 
-          to={`/eventos/${evento.id}/calculo`} 
-          className="flex-1 text-center py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm shadow-indigo-100 hover:shadow-none transition-all"
+        <Link
+          to={`/eventos/${evento.id}/calculo`}
+          className="flex-1 text-center py-2 sm:py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-xs hover:shadow-none transition-all flex items-center justify-center min-h-[36px]"
         >
           Calcular
         </Link>

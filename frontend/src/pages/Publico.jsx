@@ -189,14 +189,14 @@ export default function PaginaPublica() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-[60px] pointer-events-none" />
             <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Huella de Carbono Total</p>
 
-            <div className="my-6 inline-flex flex-col items-center justify-center p-8 w-56 h-56 rounded-full border border-emerald-500/30 bg-emerald-500/[0.04] shadow-[inset_0_0_40px_rgba(16,185,129,0.15),0_0_40px_rgba(16,185,129,0.2)] hover:shadow-[inset_0_0_50px_rgba(16,185,129,0.25),0_0_50px_rgba(16,185,129,0.35)] transition-all duration-500 relative group">
+            <div className="my-5 sm:my-6 inline-flex flex-col items-center justify-center p-6 sm:p-8 w-48 h-48 sm:w-56 sm:h-56 rounded-full border border-emerald-500/30 bg-emerald-500/[0.04] shadow-[inset_0_0_40px_rgba(16,185,129,0.15),0_0_40px_rgba(16,185,129,0.2)] hover:shadow-[inset_0_0_50px_rgba(16,185,129,0.25),0_0_50px_rgba(16,185,129,0.35)] transition-all duration-500 relative group">
               {/* Soft pulsing aura glow background */}
               <div className="absolute -inset-1 rounded-full bg-emerald-600/10 blur-xl animate-pulse pointer-events-none group-hover:bg-emerald-200/20" />
 
-              <span className="text-4xl md:text-5xl font-black text-white font-mono tracking-tighter transition-all duration-300 group-hover:scale-105 z-10">
+              <span className="text-3xl sm:text-4xl md:text-5xl font-black text-white font-mono tracking-tighter transition-all duration-300 group-hover:scale-105 z-10 truncate max-w-full px-2">
                 {totalAnimado.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
               </span>
-              <span className="text-emerald-400 font-bold text-xs uppercase tracking-widest mt-1.5 z-10">
+              <span className="text-emerald-400 font-bold text-[10px] sm:text-xs uppercase tracking-widest mt-1.5 z-10">
                 kgCO2e
               </span>
 

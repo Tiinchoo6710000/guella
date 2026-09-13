@@ -328,24 +328,24 @@ export default function PaginaEventoDetalle() {
       <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
         <Link to="/eventos" className="hover:text-indigo-600 transition-colors">Eventos</Link>
         <span className="text-gray-300">/</span>
-        <span className="text-gray-500">Detalle del evento</span>
+        <span className="text-gray-500 truncate">Detalle del evento</span>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-gray-100">
-        <div className="space-y-2.5">
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-none">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6 pb-5 sm:pb-6 border-b border-gray-100">
+        <div className="space-y-2 w-full md:w-auto">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight leading-tight break-words">
             {evento.nombre}
           </h1>
           <div className="flex flex-wrap gap-2">
             {/* Etiqueta de Fecha */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-gray-50 border border-gray-200/60 text-gray-600 shadow-sm">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-50 border border-gray-200/60 text-gray-600 shadow-2xs">
               <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {evento.fecha}
             </span>
             {/* Etiqueta de Ubicación */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-gray-50 border border-gray-200/60 text-gray-600 shadow-sm">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-50 border border-gray-200/60 text-gray-600 shadow-2xs">
               <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -355,10 +355,10 @@ export default function PaginaEventoDetalle() {
           </div>
         </div>
 
-        <div className="flex w-full md:w-auto items-center gap-3">
+        <div className="flex flex-col sm:flex-row w-full md:w-auto items-stretch sm:items-center gap-2.5 sm:gap-3">
           <Link
             to={`/eventos/${id}/calculo`}
-            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all duration-200"
+            className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xs hover:shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 min-h-[40px]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -367,7 +367,7 @@ export default function PaginaEventoDetalle() {
           </Link>
           <button
             onClick={manejarEliminarEvento}
-            className="flex-1 md:flex-initial inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-500 hover:text-rose-600 hover:bg-rose-50/50 hover:border-rose-200 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 border border-gray-200 text-gray-600 hover:text-rose-600 hover:bg-rose-50/50 hover:border-rose-200 px-4 py-2.5 rounded-xl text-sm font-semibold shadow-2xs transition-all duration-200 cursor-pointer min-h-[40px]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -377,27 +377,27 @@ export default function PaginaEventoDetalle() {
         </div>
       </div>
 
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Card 1: Asistentes */}
-        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-xs flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
           <div className="p-2 sm:p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0 w-fit mx-auto sm:mx-0">
-            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
           <div className="min-w-0 w-full sm:w-auto">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Asistentes</p>
-            <p className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">{evento.cantidad_asistentes?.toLocaleString() || '0'}</p>
-            <p className="text-[9px] sm:text-[10px] text-gray-500">Público registrado</p>
+            <p className="text-sm sm:text-lg md:text-xl font-bold text-gray-900 mt-0.5">{evento.cantidad_asistentes?.toLocaleString('es-AR') || '0'}</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400">Público registrado</p>
           </div>
         </div>
 
         {/* Card 2: Estado */}
-        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-xs flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
           <div className={`p-2 sm:p-3 rounded-lg shrink-0 w-fit mx-auto sm:mx-0 ${
             estado === 'Sin cálculo' ? 'bg-rose-50 text-rose-600' : estado === 'Pendiente' ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'
           }`}>
-            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
@@ -417,38 +417,38 @@ export default function PaginaEventoDetalle() {
                 </span>
               )}
             </div>
-            <p className="text-[9px] sm:text-[10px] text-gray-500 mt-1">Progreso actual</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400 mt-1">Progreso actual</p>
           </div>
         </div>
 
         {/* Card 3: Cálculo Activo */}
-        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-xs flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
           <div className="p-2 sm:p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0 w-fit mx-auto sm:mx-0">
-            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <div className="min-w-0 w-full sm:w-auto">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Cálculo activo</p>
-            <p className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">{evento.calculo_actual ? `v${evento.calculo_actual.version}` : '-'}</p>
-            <p className="text-[9px] sm:text-[10px] text-gray-500">Historial de versión</p>
+            <p className="text-sm sm:text-lg md:text-xl font-bold text-gray-900 mt-0.5">{evento.calculo_actual ? `v${evento.calculo_actual.version}` : '-'}</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400">Historial de versión</p>
           </div>
         </div>
 
         {/* Card 4: Total de Emisiones */}
-        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
+        <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-xs flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
           <div className="p-2 sm:p-3 bg-emerald-50 text-emerald-600 rounded-lg shrink-0 w-fit mx-auto sm:mx-0">
-            <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
             </svg>
           </div>
           <div className="min-w-0 w-full sm:w-auto">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Huella total</p>
-            <p className="text-base sm:text-xl font-bold text-gray-900 mt-0.5">
+            <p className="text-sm sm:text-lg md:text-xl font-bold text-gray-900 mt-0.5 truncate">
               {evento.calculo_actual ? `${Number(evento.calculo_actual.total).toFixed(2)}` : '-'}
-              {evento.calculo_actual && <span className="text-[10px] font-medium text-gray-400 ml-1">CO2e</span>}
+              {evento.calculo_actual && <span className="text-[9px] sm:text-[10px] font-medium text-gray-400 ml-0.5">kgCO2e</span>}
             </p>
-            <p className="text-[9px] sm:text-[10px] text-gray-500">Emisión acumulada</p>
+            <p className="text-[9px] sm:text-[10px] text-gray-400">Emisión acumulada</p>
           </div>
         </div>
       </section>
@@ -664,9 +664,9 @@ export default function PaginaEventoDetalle() {
 
             <p className="text-[10px] text-gray-400">La evidencia se guardará de forma segura en el servidor asociada a este evento.</p>
             <button 
-              type="submit"
+              type="submit" 
               disabled={subiendo} 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm w-fit"
+              className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold px-5 py-2.5 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-xs w-full sm:w-auto cursor-pointer flex items-center justify-center min-h-[38px]"
             >
               {subiendo ? 'Subiendo evidencia...' : 'Agregar evidencia'}
             </button>

@@ -3,17 +3,17 @@ export default function TarjetaFactor({ factor, esUltimaVersion, onEliminar }) {
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group relative">
       <div className="p-3 sm:p-4 flex-1 min-w-0">
         {/* Category & Region badges */}
-        <div className="flex flex-wrap items-center gap-1.5 mb-2.5 pr-6">
+        <div className="flex flex-wrap items-center gap-1.5 mb-2.5 pr-8">
           <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wide">
             {factor.categoria}
           </span>
-          <span className="text-[10px] text-gray-400 font-semibold bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100 uppercase tracking-wide">
+          <span className="text-[10px] text-gray-500 font-semibold bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100 uppercase tracking-wide">
             {factor.region}
           </span>
         </div>
 
         {/* Title / Subtype */}
-        <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-tight mb-2.5 break-words" title={factor.subtipo}>
+        <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-tight mb-2.5 break-words pr-8" title={factor.subtipo}>
           {factor.subtipo}
         </h3>
 
@@ -48,7 +48,7 @@ export default function TarjetaFactor({ factor, esUltimaVersion, onEliminar }) {
       {/* Delete button (Placed at the end for z-index layering safety) */}
       <button
         onClick={onEliminar}
-        className="absolute top-2.5 right-2.5 text-red-500 hover:text-white bg-red-50 hover:bg-red-600 p-1.5 rounded-lg border border-red-100 hover:border-red-600 transition-all duration-200 shadow-sm z-30 cursor-pointer"
+        className="absolute top-2.5 right-2.5 text-red-500 hover:text-white bg-red-50 hover:bg-red-600 p-2 sm:p-1.5 rounded-lg border border-red-100 hover:border-red-600 transition-all duration-200 shadow-xs z-30 cursor-pointer flex items-center justify-center min-w-[32px] min-h-[32px]"
         title="Eliminar Dimensión"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">

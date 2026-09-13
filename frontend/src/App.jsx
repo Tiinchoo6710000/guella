@@ -11,7 +11,7 @@ export default function App() {
   return (
     <div className={sinEncabezado ? "min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500/30" : "min-h-screen bg-gray-50 text-gray-900"}>
       {!sinEncabezado && <Encabezado />}
-      <main className={sinEncabezado ? "" : "p-4 sm:p-6 lg:p-8 w-full"}>
+      <main className={sinEncabezado ? "w-full" : "p-3.5 sm:p-6 lg:p-8 pb-20 md:pb-8 max-w-7xl mx-auto w-full"}>
         <RutasApp />
       </main>
     </div>

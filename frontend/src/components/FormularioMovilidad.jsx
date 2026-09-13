@@ -98,7 +98,7 @@ export default function FormularioMovilidad({ onCreado, eventoId }) {
       </div>
 
       <div className="flex justify-end pt-2">
-        <button className="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-sm hover:shadow transition-all duration-150">
+        <button className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-xs hover:shadow transition-all duration-150 cursor-pointer flex items-center justify-center min-h-[40px]">
           Agregar movilidad
         </button>
       </div>

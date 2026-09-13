@@ -129,35 +129,62 @@ export default function PaginaDetalleCalculoHistorico() {
         </div>
       </div>
 
-      {/* Resumen del evento como barra horizontal descriptiva */}
-      <div className="bg-white p-3 sm:px-4 sm:py-3 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-600">
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+      {/* Resumen del evento con diseño de chips / tarjetas con emojis tanto en mobile como en desktop */}
+      <div className="bg-white p-3.5 sm:p-4 rounded-xl border border-gray-100 shadow-xs flex flex-col xl:flex-row xl:items-center justify-between gap-3 text-xs text-gray-600">
+        <div className="flex items-center justify-between shrink-0">
+          <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
             Resumen
           </span>
+          <span className="xl:hidden text-[11px] font-bold text-indigo-700 bg-indigo-50/70 border border-indigo-100/60 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+            <span className="text-xs">👥</span>
+            {Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asistentes
+          </span>
         </div>
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-gray-500">
-          <div className="flex items-center gap-1.5" title={`Fecha: ${evento.fecha}`}>
-            <span className="shrink-0 text-gray-400">📅</span>
-            <span className="text-gray-700 font-medium">{evento.fecha}</span>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 xl:flex xl:flex-row xl:items-center gap-2 xl:gap-3 text-gray-500">
+          {/* Fecha */}
+          <div className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 bg-gray-50/80 rounded-xl border border-gray-100 min-w-0" title={`Fecha: ${evento.fecha}`}>
+            <span className="shrink-0 text-sm">📅</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Fecha</p>
+              <p className="text-gray-800 font-semibold text-xs truncate">{evento.fecha || '—'}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5" title={`Ubicación: ${[evento.ciudad, evento.pais].filter(Boolean).join(', ')}`}>
-            <span className="shrink-0 text-gray-400">📍</span>
-            <span className="text-gray-700 font-medium">{[evento.ciudad, evento.pais].filter(Boolean).join(', ') || evento.ciudad || '—'}</span>
+
+          {/* Ubicación */}
+          <div className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 bg-gray-50/80 rounded-xl border border-gray-100 min-w-0" title={`Ubicación: ${[evento.ciudad, evento.pais].filter(Boolean).join(', ')}`}>
+            <span className="shrink-0 text-sm">📍</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Ubicación</p>
+              <p className="text-gray-800 font-semibold text-xs truncate">{[evento.ciudad, evento.pais].filter(Boolean).join(', ') || evento.ciudad || '—'}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5" title={`Región: ${evento.region || '—'}`}>
-            <span className="shrink-0 text-gray-400">🌐</span>
-            <span className="text-gray-400 font-normal">Región:</span>
-            <span className="text-gray-700 font-medium">{evento.region || '—'}</span>
+
+          {/* Región */}
+          <div className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 bg-gray-50/80 rounded-xl border border-gray-100 min-w-0" title={`Región: ${evento.region || '—'}`}>
+            <span className="shrink-0 text-sm">🌐</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Región</p>
+              <p className="text-gray-800 font-semibold text-xs truncate">{evento.region || '—'}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5" title={`Productor: ${evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'}`}>
-            <span className="shrink-0 text-gray-400">👤</span>
-            <span className="text-gray-400 font-normal">Productor:</span>
-            <span className="text-gray-700 font-medium">{evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'}</span>
+
+          {/* Productor */}
+          <div className="flex items-center gap-2 p-2 sm:px-3 sm:py-2 bg-gray-50/80 rounded-xl border border-gray-100 min-w-0" title={`Productor: ${evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'}`}>
+            <span className="shrink-0 text-sm">👤</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-gray-400 leading-none mb-0.5">Productor</p>
+              <p className="text-gray-800 font-semibold text-xs truncate">{evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5" title={`Asistentes: ${evento.cantidad_asistentes}`}>
-            <span className="shrink-0 text-gray-400">👥</span>
-            <span className="font-semibold text-gray-800">{Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asistentes</span>
+
+          {/* Asistentes (Desktop) */}
+          <div className="hidden xl:flex items-center gap-2 p-2 sm:px-3 sm:py-2 bg-indigo-50/50 rounded-xl border border-indigo-100/70 min-w-0" title={`Asistentes: ${evento.cantidad_asistentes}`}>
+            <span className="shrink-0 text-sm">👥</span>
+            <div className="min-w-0">
+              <p className="text-[9px] uppercase font-bold text-indigo-400 leading-none mb-0.5">Asistentes</p>
+              <p className="text-indigo-950 font-bold text-xs truncate">{Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asist.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -207,11 +234,10 @@ export default function PaginaDetalleCalculoHistorico() {
               <span className="inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 Calculado
               </span>
-              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full border ${
-                calculo.estado === 'verificado'
-                  ? 'bg-green-50 text-green-700 border-green-200'
-                  : 'bg-amber-50 text-amber-700 border-amber-200'
-              }`}>
+              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full border ${calculo.estado === 'verificado'
+                ? 'bg-green-50 text-green-700 border-green-200'
+                : 'bg-amber-50 text-amber-700 border-amber-200'
+                }`}>
                 {calculo.estado === 'verificado' ? 'Verificado' : 'Estimado'}
               </span>
             </div>
@@ -221,9 +247,8 @@ export default function PaginaDetalleCalculoHistorico() {
 
         {/* Card 4: Activo */}
         <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-center sm:flex-row sm:items-center sm:text-left gap-2 sm:gap-4 transition-all duration-200 hover:shadow-md hover:border-gray-200">
-          <div className={`p-2 sm:p-3 rounded-lg shrink-0 w-fit mx-auto sm:mx-0 ${
-            calculo.es_actual ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-400'
-          }`}>
+          <div className={`p-2 sm:p-3 rounded-lg shrink-0 w-fit mx-auto sm:mx-0 ${calculo.es_actual ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-400'
+            }`}>
             <svg className="w-5 h-5 sm:w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
@@ -231,9 +256,8 @@ export default function PaginaDetalleCalculoHistorico() {
           <div className="min-w-0 w-full sm:w-auto">
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Activo</p>
             <div className="mt-1 flex justify-center sm:justify-start">
-              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full ${
-                calculo.es_actual ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'
-              }`}>
+              <span className={`inline-flex items-center text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full ${calculo.es_actual ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'
+                }`}>
                 {calculo.es_actual ? 'Sí (Activo)' : 'No (Histórico)'}
               </span>
             </div>
@@ -252,8 +276,8 @@ export default function PaginaDetalleCalculoHistorico() {
               <button
                 onClick={() => setTabActiva('categoria')}
                 className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${tabActiva === 'categoria'
-                    ? 'bg-white text-indigo-700 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-indigo-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Por Categoría
@@ -261,8 +285,8 @@ export default function PaginaDetalleCalculoHistorico() {
               <button
                 onClick={() => setTabActiva('origen')}
                 className={`flex-1 py-2 text-xs font-semibold rounded-lg text-center transition-all cursor-pointer ${tabActiva === 'origen'
-                    ? 'bg-white text-indigo-700 shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-indigo-700 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
                   }`}
               >
                 Por Origen
