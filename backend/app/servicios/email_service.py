@@ -90,23 +90,108 @@ PLANTILLA_RESET = """
 """
 
 
+import asyncio
+import json
+import urllib.request
+import urllib.error
+
+
+def _enviar_via_resend(api_key: str, destinatario: str, nombre: str, html: str) -> bool:
+    """Envío instantáneo vía Resend REST API (Puerto HTTPS 443, no bloqueado por Render)."""
+    url = "https://api.resend.com/emails"
+    from_name = os.getenv("MAIL_FROM_NAME", "Güella MRV").strip()
+    from_email = os.getenv("RESEND_FROM", "onboarding@resend.dev").strip()
+    
+    headers = {
+        "Authorization": f"Bearer {api_key.strip()}",
+        "Content-Type": "application/json",
+        "User-Agent": "Guella-MRV/1.0"
+    }
+    payload = {
+        "from": f"{from_name} <{from_email}>",
+        "to": [destinatario],
+        "subject": "Recuperá tu contraseña — Güella MRV",
+        "html": html
+    }
+    
+    req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status in (200, 201):
+                print(f"[OK] Email enviado exitosamente vía Resend API a {destinatario}")
+                return True
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8")
+        print(f"[ERROR] Error HTTP al enviar vía Resend ({e.code}): {error_body}")
+        raise e
+    except Exception as e:
+        print(f"[ERROR] Error de conexión al enviar vía Resend: {e}")
+        raise e
+    return False
+
+
+def _enviar_via_brevo(api_key: str, destinatario: str, nombre: str, html: str) -> bool:
+    """Envío instantáneo vía Brevo REST API (Puerto HTTPS 443, no bloqueado por Render)."""
+    url = "https://api.brevo.com/v3/smtp/email"
+    from_name = os.getenv("MAIL_FROM_NAME", "Güella MRV").strip()
+    from_email = os.getenv("MAIL_FROM", os.getenv("MAIL_USERNAME", "guellamedicion@gmail.com")).strip()
+    
+    headers = {
+        "api-key": api_key.strip(),
+        "Content-Type": "application/json",
+        "User-Agent": "Guella-MRV/1.0"
+    }
+    payload = {
+        "sender": {"name": from_name, "email": from_email},
+        "to": [{"email": destinatario, "name": nombre}],
+        "subject": "Recuperá tu contraseña — Güella MRV",
+        "htmlContent": html
+    }
+    
+    req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status in (200, 201):
+                print(f"[OK] Email enviado exitosamente vía Brevo API a {destinatario}")
+                return True
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8")
+        print(f"[ERROR] Error HTTP al enviar vía Brevo ({e.code}): {error_body}")
+        raise e
+    except Exception as e:
+        print(f"[ERROR] Error de conexión al enviar vía Brevo: {e}")
+        raise e
+    return False
+
+
 async def enviar_email_reset_password(email: str, nombre: str, reset_url: str):
-    """Envía el email de recuperación de contraseña."""
+    """Envía el email de recuperación de contraseña usando HTTP API o SMTP como fallback."""
     print("\n=======================================================")
     print("[RECUPERACION DE CONTRASENA]")
     print(f"Para: {nombre} ({email})")
     print(f"Link: {reset_url}")
     print("=======================================================\n")
 
+    html = Template(PLANTILLA_RESET).render(nombre=nombre, reset_url=reset_url)
+
+    # 1. Intentar con Resend API (HTTP REST - instantáneo y 100% compatible con Render Free)
+    resend_key = os.getenv("RESEND_API_KEY", "").strip()
+    if resend_key:
+        return await asyncio.to_thread(_enviar_via_resend, resend_key, email, nombre, html)
+
+    # 2. Intentar con Brevo API (HTTP REST - instantáneo y 100% compatible con Render Free)
+    brevo_key = os.getenv("BREVO_API_KEY", "").strip()
+    if brevo_key:
+        return await asyncio.to_thread(_enviar_via_brevo, brevo_key, email, nombre, html)
+
+    # 3. Fallback a SMTP tradicional
     config = obtener_config_mail()
     username = os.getenv("MAIL_USERNAME", "")
     password = os.getenv("MAIL_PASSWORD", "")
     if not username or "tu_email" in username or not password or "tu_app_password" in password:
-        print("[AVISO] Variables MAIL_USERNAME o MAIL_PASSWORD no configuradas en el servidor de producción.")
+        print("[AVISO] Variables de email no configuradas en el servidor de producción.")
         print("[INFO] Por seguridad se imprimió el link arriba en los logs del servidor.")
         return False
-
-    html = Template(PLANTILLA_RESET).render(nombre=nombre, reset_url=reset_url)
 
     mensaje = MessageSchema(
         subject="Recuperá tu contraseña — Güella MRV",
@@ -118,10 +203,10 @@ async def enviar_email_reset_password(email: str, nombre: str, reset_url: str):
     try:
         fm = FastMail(config)
         await fm.send_message(mensaje)
-        print(f"[OK] Email de recuperación enviado con éxito a {email}")
+        print(f"[OK] Email de recuperación enviado con éxito vía SMTP a {email}")
         return True
     except Exception as e:
         print(f"[ERROR] Error al conectar/enviar con servidor SMTP ({config.MAIL_SERVER}:{config.MAIL_PORT}): {e}")
-        print(f"[INFO] El link generado es: {reset_url}")
+        print(f"[INFO] Render Free bloquea conexiones SMTP. Se recomienda configurar RESEND_API_KEY.")
         raise e
 
