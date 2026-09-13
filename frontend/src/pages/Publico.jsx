@@ -138,6 +138,16 @@ export default function PaginaPublica() {
     return <LoadingSpinner mensaje="Obteniendo reporte ambiental..." oscuro fullscreen />;
   }
 
+  const textoTotal = totalAnimado.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+  const tamañoFuenteTotal =
+    textoTotal.length > 11
+      ? 'text-xl sm:text-2xl md:text-3xl'
+      : textoTotal.length > 8
+      ? 'text-2xl sm:text-3xl md:text-4xl'
+      : textoTotal.length > 5
+      ? 'text-3xl sm:text-4xl md:text-5xl'
+      : 'text-4xl sm:text-5xl md:text-6xl'
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16 px-4 sm:px-8 lg:px-12 w-full pt-6 md:pt-12">
       {/* Encabezado Principal / Branding */}
@@ -149,31 +159,29 @@ export default function PaginaPublica() {
         <h1 className="text-3xl md:text-5xl font-extrabold text-white mt-4 tracking-tight drop-shadow-md">
           {datos.nombre}
         </h1>
-        <div className="flex flex-wrap items-center justify-center gap-4 text-xs md:text-sm text-slate-400 mt-3 font-medium">
-          <span className="flex items-center gap-1.5">
-            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm text-slate-300 mt-4 font-medium max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-300 shadow-sm backdrop-blur-sm">
+            <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {datos.fecha}
-          </span>
-          <span className="w-1 h-1 rounded-full bg-slate-700 hidden sm:inline" />
-          <span className="flex items-center gap-1.5">
-            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <span>{datos.fecha}</span>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-300 shadow-sm backdrop-blur-sm">
+            <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {datos.ciudad}, {datos.pais}
-          </span>
-          {datos.cantidad_asistentes && (
-            <>
-              <span className="w-1 h-1 rounded-full bg-slate-700" />
-              <span className="flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {datos.cantidad_asistentes.toLocaleString()} asistentes
-              </span>
-            </>
+            <span>{datos.ciudad}, {datos.pais}</span>
+          </div>
+
+          {Boolean(datos.cantidad_asistentes) && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-slate-300 shadow-sm backdrop-blur-sm">
+              <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>{Number(datos.cantidad_asistentes).toLocaleString()} asistentes</span>
+            </div>
           )}
         </div>
       </header>
@@ -185,18 +193,18 @@ export default function PaginaPublica() {
         <section className="lg:col-span-5 space-y-6">
 
           {/* Tarjeta de Huella de Carbono */}
-          <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 md:p-8 text-center relative overflow-hidden shadow-xl">
+          <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-6 md:p-8 text-center relative overflow-hidden shadow-xl flex flex-col items-center">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-emerald-500/10 rounded-full blur-[60px] pointer-events-none" />
             <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Huella de Carbono Total</p>
 
-            <div className="my-5 sm:my-6 inline-flex flex-col items-center justify-center p-6 sm:p-8 w-48 h-48 sm:w-56 sm:h-56 rounded-full border border-emerald-500/30 bg-emerald-500/[0.04] shadow-[inset_0_0_40px_rgba(16,185,129,0.15),0_0_40px_rgba(16,185,129,0.2)] hover:shadow-[inset_0_0_50px_rgba(16,185,129,0.25),0_0_50px_rgba(16,185,129,0.35)] transition-all duration-500 relative group">
+            <div className="my-4 sm:my-6 inline-flex flex-col items-center justify-center p-4 sm:p-6 w-56 h-56 sm:w-64 sm:h-64 rounded-full border border-emerald-500/30 bg-emerald-500/[0.04] shadow-[inset_0_0_40px_rgba(16,185,129,0.15),0_0_40px_rgba(16,185,129,0.2)] hover:shadow-[inset_0_0_50px_rgba(16,185,129,0.25),0_0_50px_rgba(16,185,129,0.35)] transition-all duration-500 relative group max-w-full">
               {/* Soft pulsing aura glow background */}
               <div className="absolute -inset-1 rounded-full bg-emerald-600/10 blur-xl animate-pulse pointer-events-none group-hover:bg-emerald-200/20" />
 
-              <span className="text-3xl sm:text-4xl md:text-5xl font-black text-white font-mono tracking-tighter transition-all duration-300 group-hover:scale-105 z-10 truncate max-w-full px-2">
-                {totalAnimado.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+              <span className={`${tamañoFuenteTotal} font-black text-white font-mono tracking-tight transition-all duration-300 group-hover:scale-105 z-10 text-center px-2 select-all leading-tight w-full`}>
+                {textoTotal}
               </span>
-              <span className="text-emerald-400 font-bold text-[10px] sm:text-xs uppercase tracking-widest mt-1.5 z-10">
+              <span className="text-emerald-400 font-bold text-xs sm:text-sm uppercase tracking-widest mt-1.5 z-10">
                 kgCO2e
               </span>
 
