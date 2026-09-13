@@ -208,7 +208,7 @@ export default function PaginaCalculo() {
           // Subtítulo
           ctx.fillStyle = '#64748b'
           ctx.font = '16px system-ui, -apple-system, sans-serif'
-          ctx.fillText('Huella de carbono verificada • Guella', canvas.width / 2, qrSize + padding + 70)
+          ctx.fillText('Huella de carbono verificada • Güella', canvas.width / 2, qrSize + padding + 70)
 
           URL.revokeObjectURL(svgUrl)
 
