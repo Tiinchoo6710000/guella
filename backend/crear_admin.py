@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-EMAIL_ADMIN = "admin@guella.com"
+EMAIL_ADMIN = "guellamedicion@gmail.com"
 PASSWORD_ADMIN = "Admin2024!"
 
 def crear_o_actualizar_admin():
