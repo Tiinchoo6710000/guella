@@ -8,7 +8,7 @@ load_dotenv()
 def obtener_config_mail():
     load_dotenv(override=True)
     username = os.getenv("MAIL_USERNAME", "noreply@guella.com").strip()
-    password = os.getenv("MAIL_PASSWORD", "").strip()
+    password = os.getenv("MAIL_PASSWORD", "").replace(" ", "").strip()
     mail_from = os.getenv("MAIL_FROM", username if "@" in username else "noreply@guella.com").strip()
     if not mail_from or "@" not in mail_from:
         mail_from = "noreply@guella.com"
