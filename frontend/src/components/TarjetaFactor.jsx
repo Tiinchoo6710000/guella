@@ -1,4 +1,4 @@
-export default function TarjetaFactor({ factor, onEliminar }) {
+export default function TarjetaFactor({ factor, esUltimaVersion, onEliminar }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group relative">
       <div className="p-3 sm:p-4 flex-1 min-w-0">
@@ -32,7 +32,14 @@ export default function TarjetaFactor({ factor, onEliminar }) {
             <span className="break-words" title={factor.fuente}>Fuente: {factor.fuente}</span>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-2 text-[10px] text-gray-400 pt-0.5">
-            <span>Versión: {factor.version}</span>
+            <span className="inline-flex items-center gap-1">
+              Versión: {factor.version}
+              {esUltimaVersion && (
+                <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 rounded px-1.5 py-0.2">
+                  Última
+                </span>
+              )}
+            </span>
             <span>Vigencia: {factor.vigencia}</span>
           </div>
         </div>
@@ -51,3 +58,4 @@ export default function TarjetaFactor({ factor, onEliminar }) {
     </div>
   )
 }
+

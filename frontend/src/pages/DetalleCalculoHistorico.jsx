@@ -86,7 +86,7 @@ export default function PaginaDetalleCalculoHistorico() {
   if (!evento || !calculo) return <p className="text-center p-8 text-gray-500 font-medium">No se pudo cargar el detalle del cálculo.</p>
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       {/* Breadcrumb de navegación */}
       <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
         <Link to="/eventos" className="hover:text-indigo-600 transition-colors">Eventos</Link>
@@ -131,23 +131,33 @@ export default function PaginaDetalleCalculoHistorico() {
 
       {/* Resumen del evento como barra horizontal descriptiva */}
       <div className="bg-white p-3 sm:px-4 sm:py-3 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-600">
-        <div className="flex items-center gap-2">
-          <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
             Resumen
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <span>📅</span>
-            <span>{evento.fecha}</span>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-gray-500">
+          <div className="flex items-center gap-1.5" title={`Fecha: ${evento.fecha}`}>
+            <span className="shrink-0 text-gray-400">📅</span>
+            <span className="text-gray-700 font-medium">{evento.fecha}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span>📍</span>
-            <span>{evento.ciudad}, {evento.region}</span>
+          <div className="flex items-center gap-1.5" title={`Ubicación: ${[evento.ciudad, evento.pais].filter(Boolean).join(', ')}`}>
+            <span className="shrink-0 text-gray-400">📍</span>
+            <span className="text-gray-700 font-medium">{[evento.ciudad, evento.pais].filter(Boolean).join(', ') || evento.ciudad || '—'}</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span>👥</span>
-            <span className="font-medium text-gray-800">{evento.cantidad_asistentes?.toLocaleString()} asistentes</span>
+          <div className="flex items-center gap-1.5" title={`Región: ${evento.region || '—'}`}>
+            <span className="shrink-0 text-gray-400">🌐</span>
+            <span className="text-gray-400 font-normal">Región:</span>
+            <span className="text-gray-700 font-medium">{evento.region || '—'}</span>
+          </div>
+          <div className="flex items-center gap-1.5" title={`Productor: ${evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'}`}>
+            <span className="shrink-0 text-gray-400">👤</span>
+            <span className="text-gray-400 font-normal">Productor:</span>
+            <span className="text-gray-700 font-medium">{evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'}</span>
+          </div>
+          <div className="flex items-center gap-1.5" title={`Asistentes: ${evento.cantidad_asistentes}`}>
+            <span className="shrink-0 text-gray-400">👥</span>
+            <span className="font-semibold text-gray-800">{Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asistentes</span>
           </div>
         </div>
       </div>
@@ -317,52 +327,70 @@ export default function PaginaDetalleCalculoHistorico() {
 
       <section className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <h2 className="font-semibold mb-3">Aportes</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Aportes</h2>
+            {inputs.length > 0 && (
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {inputs.length} {inputs.length === 1 ? 'item' : 'items'}
+              </span>
+            )}
+          </div>
           {inputs.length === 0 ? <p className="text-sm text-gray-500">No hay inputs asociados a este cálculo.</p> : (
-            <div className="grid grid-cols-2 gap-2.5">
-              {inputs.map(item => (
-                <div key={item.id} className="bg-gray-50/50 border border-gray-100 rounded-xl p-2.5 text-[10px] sm:text-xs space-y-1 shadow-sm flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <p className="font-bold text-gray-900 capitalize text-xs break-words" title={item.subtipo}>{item.subtipo || 'Sin subtipo'}</p>
-                    <p className="text-gray-500">Valor: <span className="font-medium text-gray-700">{item.input_valor} {item.input_unidad}</span></p>
-                    <p className="text-gray-500">Dimensión: <span className="font-medium text-gray-700">{item.factor_valor} {item.factor_unidad}</span></p>
-                    <p className="text-gray-400 break-words" title={item.factor_fuente}>Fuente: {item.factor_fuente || '-'}</p>
-                    <p className="text-gray-400">Versión: {item.factor_version || '-'}</p>
+            <div className="max-h-[400px] overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 gap-2.5">
+                {inputs.map(item => (
+                  <div key={item.id} className="bg-gray-50/50 border border-gray-100 rounded-xl p-2.5 text-[10px] sm:text-xs space-y-1 shadow-sm flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <p className="font-bold text-gray-900 capitalize text-xs break-words" title={item.subtipo}>{item.subtipo || 'Sin subtipo'}</p>
+                      <p className="text-gray-500">Valor: <span className="font-medium text-gray-700">{item.input_valor} {item.input_unidad}</span></p>
+                      <p className="text-gray-500">Dimensión: <span className="font-medium text-gray-700">{item.factor_valor} {item.factor_unidad}</span></p>
+                      <p className="text-gray-400 break-words" title={item.factor_fuente}>Fuente: {item.factor_fuente || '-'}</p>
+                      <p className="text-gray-400">Versión: {item.factor_version || '-'}</p>
+                    </div>
+                    <div className="border-t border-gray-200/60 pt-1 mt-1 text-[11px] font-semibold text-emerald-700">
+                      {Number(item.emisiones).toFixed(2)} kgCO2e
+                    </div>
+                    {item.comentario && (
+                      <p className="text-[9px] text-gray-400 italic break-words mt-1 border-t border-dashed border-gray-200 pt-1">"{item.comentario}"</p>
+                    )}
                   </div>
-                  <div className="border-t border-gray-200/60 pt-1 mt-1 text-[11px] font-semibold text-emerald-700">
-                    {Number(item.emisiones).toFixed(2)} kgCO2e
-                  </div>
-                  {item.comentario && (
-                    <p className="text-[9px] text-gray-400 italic break-words mt-1 border-t border-dashed border-gray-200 pt-1">"{item.comentario}"</p>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
 
         <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <h2 className="font-semibold mb-3">Logística</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Logística</h2>
+            {movilidades.length > 0 && (
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {movilidades.length} {movilidades.length === 1 ? 'registro' : 'registros'}
+              </span>
+            )}
+          </div>
           {movilidades.length === 0 ? <p className="text-sm text-gray-500">No hay movilidad de empleados en este cálculo.</p> : (
-            <div className="grid grid-cols-2 gap-2.5">
-              {movilidades.map(item => (
-                <div key={item.id} className="bg-gray-50/50 border border-gray-100 rounded-xl p-2.5 text-[10px] sm:text-xs space-y-1 shadow-sm flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <p className="font-bold text-gray-900 capitalize text-xs break-words" title={item.subtipo}>{item.subtipo || 'Movilidad'}</p>
-                    <p className="text-gray-500">Distancia: <span className="font-medium text-gray-700">{item.input_valor} {item.input_unidad}</span></p>
-                    <p className="text-gray-500">Personas: <span className="font-medium text-gray-700">{item.cantidad_empleados || '-'}</span></p>
-                    <p className="text-gray-500">Dimensión: <span className="font-medium text-gray-700">{item.factor_valor} {item.factor_unidad}</span></p>
-                    <p className="text-gray-400 break-words" title={item.factor_fuente}>Fuente: {item.factor_fuente || '-'}</p>
-                    <p className="text-gray-400">Versión: {item.factor_version || '-'}</p>
+            <div className="max-h-[400px] overflow-y-auto pr-1">
+              <div className="grid grid-cols-2 gap-2.5">
+                {movilidades.map(item => (
+                  <div key={item.id} className="bg-gray-50/50 border border-gray-100 rounded-xl p-2.5 text-[10px] sm:text-xs space-y-1 shadow-sm flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <p className="font-bold text-gray-900 capitalize text-xs break-words" title={item.subtipo}>{item.subtipo || 'Movilidad'}</p>
+                      <p className="text-gray-500">Distancia: <span className="font-medium text-gray-700">{item.input_valor} {item.input_unidad}</span></p>
+                      <p className="text-gray-500">Personas: <span className="font-medium text-gray-700">{item.cantidad_empleados || '-'}</span></p>
+                      <p className="text-gray-500">Dimensión: <span className="font-medium text-gray-700">{item.factor_valor} {item.factor_unidad}</span></p>
+                      <p className="text-gray-400 break-words" title={item.factor_fuente}>Fuente: {item.factor_fuente || '-'}</p>
+                      <p className="text-gray-400">Versión: {item.factor_version || '-'}</p>
+                    </div>
+                    <div className="border-t border-gray-200/60 pt-1 mt-1 text-[11px] font-semibold text-emerald-700">
+                      {Number(item.emisiones).toFixed(2)} kgCO2e
+                    </div>
+                    {item.comentario && (
+                      <p className="text-[9px] text-gray-400 italic break-words mt-1 border-t border-dashed border-gray-200 pt-1">"{item.comentario}"</p>
+                    )}
                   </div>
-                  <div className="border-t border-gray-200/60 pt-1 mt-1 text-[11px] font-semibold text-emerald-700">
-                    {Number(item.emisiones).toFixed(2)} kgCO2e
-                  </div>
-                  {item.comentario && (
-                    <p className="text-[9px] text-gray-400 italic break-words mt-1 border-t border-dashed border-gray-200 pt-1">"{item.comentario}"</p>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -370,9 +398,16 @@ export default function PaginaDetalleCalculoHistorico() {
 
       <section className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <h2 className="font-semibold mb-3">Tickets</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Tickets</h2>
+            {ticketsAgrupados.length > 0 && (
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {ticketsAgrupados.length} {ticketsAgrupados.length === 1 ? 'ticket' : 'tickets'}
+              </span>
+            )}
+          </div>
           {ticketsAgrupados.length === 0 ? <p className="text-sm text-gray-500">No hay tickets asociados a este cálculo.</p> : (
-            <div className="space-y-4">
+            <div className="max-h-[400px] overflow-y-auto pr-1 space-y-4">
               {ticketsAgrupados.map(ticketGroup => (
                 <div key={ticketGroup.ticket_id} className="border rounded-xl p-3.5 bg-gray-50/50 space-y-3">
                   <div className="flex justify-between items-center border-b pb-2">
@@ -402,17 +437,27 @@ export default function PaginaDetalleCalculoHistorico() {
         </div>
 
         <div className="bg-white p-4 rounded-lg border shadow-sm">
-          <h2 className="font-semibold mb-3">Evidencias</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Evidencias</h2>
+            {evidenciasFiltradas.length > 0 && (
+              <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                {evidenciasFiltradas.length} {evidenciasFiltradas.length === 1 ? 'evidencia' : 'evidencias'}
+              </span>
+            )}
+          </div>
           {evidenciasFiltradas.length === 0 ? <p className="text-sm text-gray-500">No hay evidencias asociadas a este cálculo.</p> : (
-            <ul className="space-y-3">
-              {evidenciasFiltradas.map(item => (
-                <li key={item.id} className="border rounded p-3">
-                  <a className="font-medium text-indigo-600" href={item.url} target="_blank" rel="noreferrer">{item.filename}</a>
-                  <p className="text-sm text-gray-500">Tipo: {item.tipo}</p>
-                  <p className="text-sm text-gray-500">Creado: {new Date(item.creado_en).toLocaleString()}</p>
-                </li>
-              ))}
-            </ul>
+            <div className="max-h-[400px] overflow-y-auto pr-1">
+              <ul className="space-y-3">
+                {evidenciasFiltradas.map(item => (
+                  <li key={item.id} className="border rounded-xl p-3 bg-gray-50/50 hover:bg-gray-50 transition-colors flex items-center justify-between gap-3 text-xs">
+                    <div className="min-w-0 flex-1">
+                      <a className="font-bold text-indigo-600 hover:text-indigo-800 break-all" href={item.url} target="_blank" rel="noreferrer">{item.filename}</a>
+                      <p className="text-gray-400 text-[10px] mt-0.5 uppercase font-bold tracking-wider">Tipo: {item.tipo} • {new Date(item.creado_en).toLocaleDateString()}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </section>

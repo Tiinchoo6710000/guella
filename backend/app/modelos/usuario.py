@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from app.db.base_de_datos import Base
 
@@ -10,5 +11,11 @@ class Usuario(Base):
     email = Column(String, unique=True, nullable=False)
     contrasena_hash = Column(String, nullable=False)
     rol = Column(String, default="productor")
+    debe_cambiar_password = Column(Boolean, default=False, nullable=False)
+    creado_en = Column(DateTime, default=datetime.utcnow, nullable=False)
 
-    eventos = relationship("Evento", back_populates="usuario")
+    # Recuperación de contraseña
+    reset_token = Column(String, nullable=True)
+    reset_token_expiry = Column(DateTime, nullable=True)
+
+    eventos = relationship("Evento", back_populates="usuario")

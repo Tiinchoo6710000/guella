@@ -56,8 +56,8 @@ UNIDADES_POR_SUBTIPO = {
     # ENERGÍA
     # ==========================
     ("energia", "electricidad"): "kwh",
-    ("energia", "diesel_generador"): "litros",
-    ("energia", "nafta_generador"): "litros",
+    ("energia", "diesel_generador"): "m3",
+    ("energia", "nafta_generador"): "m3",
     ("energia", "solar"): "kwh",
 
     # ==========================
@@ -70,8 +70,8 @@ UNIDADES_POR_SUBTIPO = {
     # ==========================
     # AGUA
     # ==========================
-    ("agua", "red"): "litros",
-    ("agua", "transportada"): "litros",
+    ("agua", "red"): "m3",
+    ("agua", "transportada"): "m3",
 
     # ==========================
     # CATERING
@@ -79,7 +79,7 @@ UNIDADES_POR_SUBTIPO = {
     ("catering", "carne"): "kg",
     ("catering", "vegano"): "kg",
     ("catering", "vegetariano"): "kg",
-    ("catering", "bebidas"): "litros",
+    ("catering", "bebidas"): "m3",
 
     # ==========================
     # PRODUCCIÓN

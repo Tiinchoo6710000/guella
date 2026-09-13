@@ -22,8 +22,8 @@ FACTORES = {
 
     "energia": {
         "electricidad": (0.343, "kwh"),
-        "nafta_generador": (2.31, "litros"),
-        "diesel_generador": (2.68, "litros"),
+        "nafta_generador": (2310.0, "m3"),
+        "diesel_generador": (2680.0, "m3"),
         "solar": (0.05, "kwh"),
     },
 
@@ -34,15 +34,15 @@ FACTORES = {
     },
 
     "agua": {
-        "red": (0.000298, "litros"),
-        "transportada": (0.0006, "litros"),
+        "red": (0.298, "m3"),
+        "transportada": (0.6, "m3"),
     },
 
     "catering": {
         "carne": (27.0, "kg"),
         "vegano": (2.0, "kg"),
         "vegetariano": (4.5, "kg"),
-        "bebidas": (0.4, "litros"),
+        "bebidas": (400.0, "m3"),
     },
 
     "produccion": {
@@ -67,21 +67,21 @@ FACTORES = {
 # SOLO INPUTS REALES (SIN MOVILIDAD)
 INPUTS_TEST = {
     "electricidad": 22000,
-    "nafta_generador": 950,
-    "diesel_generador": 1350,
+    "nafta_generador": 0.95,
+    "diesel_generador": 1.35,
     "solar": 9800,
 
     "reciclable": 320,
     "organico": 720,
     "rechazo": 980,
 
-    "red": 42000,
-    "transportada": 15000,
+    "red": 42,
+    "transportada": 15,
 
     "carne": 520,
     "vegano": 230,
     "vegetariano": 270,
-    "bebidas": 5200,
+    "bebidas": 5.2,
 
     "papel": 320,
     "plastico": 110,

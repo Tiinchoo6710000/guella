@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from app.core.permisos import verificar_admin
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import Optional
@@ -40,6 +41,7 @@ def crear_factor(
     db: Session = Depends(obtener_db),
     usuario_actual: dict = Depends(obtener_usuario_actual)
 ):
+    verificar_admin(usuario_actual)
     datos.region = datos.region.strip()
     region_norm = normalizar_region(datos.region)
 
@@ -98,6 +100,7 @@ def eliminar_factor(
     db: Session = Depends(obtener_db),
     usuario_actual: dict = Depends(obtener_usuario_actual)
 ):
+    verificar_admin(usuario_actual)
     factor = db.query(FactorEmision).filter(FactorEmision.id == factor_id).first()
     if not factor:
         raise HTTPException(status_code=404, detail="Factor no encontrado")

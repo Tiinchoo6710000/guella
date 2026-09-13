@@ -42,6 +42,8 @@ export default function PaginaCalculo() {
   const [cargando, setCargando] = useState(true)
   const [errorEvento, setErrorEvento] = useState(null)
   const [erroresParciales, setErroresParciales] = useState([])
+  const [compartiendo, setCompartiendo] = useState(false)
+  const [mensajeCompartido, setMensajeCompartido] = useState('')
 
   const dimensionesInputs = useMemo(
     () => factores.filter(f => f.categoria?.toLowerCase() !== 'movilidad'),
@@ -164,9 +166,148 @@ export default function PaginaCalculo() {
     ? `${window.location.origin}/public/${resultado.public_slug}`
     : null
 
+  async function manejarCompartirQR() {
+    const svg = document.getElementById('qr-code-calculo-svg')
+    if (!svg || !publicUrl) return
+
+    setCompartiendo(true)
+    setMensajeCompartido('')
+
+    try {
+      const svgData = new XMLSerializer().serializeToString(svg)
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+      const svgUrl = URL.createObjectURL(svgBlob)
+
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+
+      img.onload = () => {
+        try {
+          const qrSize = 500
+          const padding = 40
+          const canvas = document.createElement('canvas')
+          canvas.width = qrSize + padding * 2
+          canvas.height = qrSize + padding * 2 + 100
+          const ctx = canvas.getContext('2d')
+
+          // Fondo blanco
+          ctx.fillStyle = '#ffffff'
+          ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+          // Dibujar QR
+          ctx.drawImage(img, padding, padding, qrSize, qrSize)
+
+          // Texto del Evento
+          ctx.fillStyle = '#0f172a'
+          ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
+          ctx.textAlign = 'center'
+          const nombreEvento = evento?.nombre || 'Evento'
+          const textoCorto = nombreEvento.length > 35 ? nombreEvento.slice(0, 32) + '...' : nombreEvento
+          ctx.fillText(textoCorto, canvas.width / 2, qrSize + padding + 40)
+
+          // Subtítulo
+          ctx.fillStyle = '#64748b'
+          ctx.font = '16px system-ui, -apple-system, sans-serif'
+          ctx.fillText('Huella de carbono verificada • Guella', canvas.width / 2, qrSize + padding + 70)
+
+          URL.revokeObjectURL(svgUrl)
+
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              setCompartiendo(false)
+              return
+            }
+
+            const fileName = `QR_${(evento?.nombre || 'evento').replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
+            const file = new File([blob], fileName, { type: 'image/png' })
+
+            let compartidoExitoso = false
+
+            // 1. Intentar Web Share API con archivo
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({
+                  title: `QR Huella de carbono - ${evento?.nombre || 'Evento'}`,
+                  text: `Mirá la huella de carbono de ${evento?.nombre || 'Evento'}:`,
+                  url: publicUrl,
+                  files: [file]
+                })
+                compartidoExitoso = true
+                setMensajeCompartido('¡QR compartido con éxito!')
+              } catch (err) {
+                if (err.name === 'AbortError') {
+                  setCompartiendo(false)
+                  return
+                }
+              }
+            } else if (navigator.share) {
+              // 2. Intentar Web Share API solo URL
+              try {
+                await navigator.share({
+                  title: `QR Huella de carbono - ${evento?.nombre || 'Evento'}`,
+                  text: `Mirá la huella de carbono de ${evento?.nombre || 'Evento'}:`,
+                  url: publicUrl
+                })
+                compartidoExitoso = true
+                setMensajeCompartido('¡Enlace compartido!')
+              } catch (err) {
+                if (err.name === 'AbortError') {
+                  setCompartiendo(false)
+                  return
+                }
+              }
+            }
+
+            // Si no se compartió por Share API (ej. desktop), descargar imagen y copiar enlace
+            if (!compartidoExitoso) {
+              const downloadUrl = URL.createObjectURL(blob)
+              const link = document.createElement('a')
+              link.href = downloadUrl
+              link.download = fileName
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              URL.revokeObjectURL(downloadUrl)
+
+              if (navigator.clipboard) {
+                try {
+                  await navigator.clipboard.writeText(publicUrl)
+                  setMensajeCompartido('¡QR descargado y enlace copiado al portapapeles!')
+                } catch {
+                  setMensajeCompartido('¡QR descargado exitosamente!')
+                }
+              } else {
+                setMensajeCompartido('¡QR descargado exitosamente!')
+              }
+            }
+
+            setTimeout(() => {
+              setMensajeCompartido('')
+            }, 4000)
+            setCompartiendo(false)
+          }, 'image/png')
+        } catch (err) {
+          console.error('Error generando imagen QR:', err)
+          setCompartiendo(false)
+        }
+      }
+
+      img.onerror = () => {
+        URL.revokeObjectURL(svgUrl)
+        setCompartiendo(false)
+        alert('Error procesando el código QR')
+      }
+
+      img.src = svgUrl
+    } catch (err) {
+      console.error('Error al compartir QR:', err)
+      setCompartiendo(false)
+    }
+  }
+
   if (errorEvento) {
     return (
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         <div className="p-4 bg-rose-50 border border-rose-200 rounded text-rose-800">
           <p className="font-bold">No se pudo cargar el evento</p>
           <p className="text-sm mt-1">{errorEvento}</p>
@@ -177,7 +318,7 @@ export default function PaginaCalculo() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <div className="w-full">
       {/* Header Section */}
       <div className="bg-white border border-gray-150 rounded-2xl p-4 sm:p-6 shadow-sm mb-6 sm:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
         <div>
@@ -254,89 +395,116 @@ export default function PaginaCalculo() {
 
             {/* Lista verificable de inputs */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-3">Lista verificable de aportes</h2>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <h2 className="text-lg font-bold text-gray-900">Lista verificable de inputs</h2>
+                {inputs.length > 0 && (
+                  <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                    {inputs.length} {inputs.length === 1 ? 'input' : 'inputs'}
+                  </span>
+                )}
+              </div>
               {inputs.length === 0 ? (
                 <p className="text-sm text-gray-500 bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl p-6 text-center">No hay inputs cargados.</p>
               ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  {inputs.map(input => (
-                    <div key={input.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:bg-gray-50/50 transition-colors flex flex-col justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <ChecklistInput input={input} />
+                <div className="max-h-[460px] overflow-y-auto pr-1.5 p-0.5 rounded-2xl">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {inputs.map(input => (
+                      <div key={input.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:bg-gray-50/50 transition-colors flex flex-col justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <ChecklistInput input={input} />
+                        </div>
+                        <div className="border-t border-gray-100 pt-3 mt-auto">
+                          <button
+                            onClick={() => manejarEliminarInput(input.id)}
+                            className="w-full text-center text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold bg-red-50 hover:bg-red-100/80 py-2 rounded-xl border border-red-100 transition-colors cursor-pointer"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                       </div>
-                      <div className="border-t border-gray-100 pt-3 mt-auto">
-                        <button
-                          onClick={() => manejarEliminarInput(input.id)}
-                          className="w-full text-center text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold bg-red-50 hover:bg-red-100/80 py-2 rounded-xl border border-red-100 transition-colors cursor-pointer"
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Movilidad Logística */}
             <div>
-              <h2 className="text-lg font-bold text-gray-900 mb-3">Movilidad Logística</h2>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <h2 className="text-lg font-bold text-gray-900">Movilidad Logística</h2>
+                {movilidad.length > 0 && (
+                  <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                    {movilidad.length} {movilidad.length === 1 ? 'registro' : 'registros'}
+                  </span>
+                )}
+              </div>
               <FormularioMovilidad onCreado={manejarCrearMovilidad} eventoId={id} />
               {movilidad.length === 0 ? (
                 <p className="mt-3 text-sm text-gray-500 bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl p-6 text-center">No hay movilidad registrada.</p>
               ) : (
-                <ul className="mt-4 bg-white border border-gray-200 rounded-2xl shadow-sm divide-y divide-gray-200 overflow-hidden">
-                  {movilidad.map(item => {
-                    const esReal = item.tipo_fuente === 'real' || item.tipo_fuente === 'verificado'
-                    return (
-                      <li key={item.id} className="p-4 hover:bg-gray-50/50 transition-colors flex items-center justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-semibold capitalize text-sm text-gray-900">{item.transporte}</span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-600 font-medium">{item.distancia} km</span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-600 font-medium">{item.cantidad_empleados} {item.cantidad_empleados === 1 ? 'persona' : 'personas'}</span>
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${esReal ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
-                              }`}>
-                              {esReal ? 'Verificado' : 'Estimado'}
-                            </span>
+                <div className="mt-4 max-h-[380px] overflow-y-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
+                  <ul className="divide-y divide-gray-200">
+                    {movilidad.map(item => {
+                      const esReal = item.tipo_fuente === 'real' || item.tipo_fuente === 'verificado'
+                      return (
+                        <li key={item.id} className="p-4 hover:bg-gray-50/50 transition-colors flex items-center justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-semibold capitalize text-sm text-gray-900">{item.transporte}</span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-gray-600 font-medium">{item.distancia} km</span>
+                              <span className="text-xs text-gray-400">•</span>
+                              <span className="text-xs text-gray-600 font-medium">{item.cantidad_empleados} {item.cantidad_empleados === 1 ? 'persona' : 'personas'}</span>
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${esReal ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                {esReal ? 'Verificado' : 'Estimado'}
+                              </span>
+                            </div>
+                            {item.comentario && (
+                              <p className="text-xs text-gray-450 italic mt-1.5 pl-2 border-l-2 border-gray-200 truncate" title={item.comentario}>
+                                "{item.comentario}"
+                              </p>
+                            )}
                           </div>
-                          {item.comentario && (
-                            <p className="text-xs text-gray-450 italic mt-1.5 pl-2 border-l-2 border-gray-200 truncate" title={item.comentario}>
-                              "{item.comentario}"
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={() => manejarEliminarMovilidad(item.id)}
-                          className="text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold shrink-0 bg-red-50 hover:bg-red-100/80 px-3.5 py-2 rounded-xl border border-red-100 transition-colors cursor-pointer"
-                        >
-                          Eliminar
-                        </button>
-                      </li>
-                    )
-                  })}
-                </ul>
+                          <button
+                            onClick={() => manejarEliminarMovilidad(item.id)}
+                            className="text-red-600 hover:text-red-700 text-xs sm:text-sm font-semibold shrink-0 bg-red-50 hover:bg-red-100/80 px-3.5 py-2 rounded-xl border border-red-100 transition-colors cursor-pointer"
+                          >
+                            Eliminar
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
               )}
             </div>
           </section>
 
           <aside className="space-y-8">
             {/* Webhook Tickets */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-1">Tickets recibidos</h2>
+            <div className="bg-white p-6 rounded-2xl border border-gray-150 shadow-sm flex flex-col">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <h2 className="text-lg font-bold text-gray-900">Tickets recibidos</h2>
+                {tickets.length > 0 && (
+                  <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                    {tickets.length} {tickets.length === 1 ? 'ticket' : 'tickets'}
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-gray-500 mb-4">Ingresados automáticamente por webhook externo.</p>
               {tickets.length === 0 ? (
                 <p className="text-sm text-gray-500 bg-gray-50/50 border border-dashed border-gray-200 rounded-2xl p-4 text-center">No hay tickets cargados.</p>
               ) : (
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  {tickets.map(ticket => (
-                    <div key={ticket.id} className="border border-gray-150 rounded-xl p-3 bg-gray-50/50 shadow-sm flex flex-col justify-center">
-                      <strong className="text-gray-900 text-xs truncate" title={ticket.ticket_id}>{ticket.ticket_id}</strong>
-                      <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider mt-1">{ticket.movilidades?.length || 0} movilidades</span>
-                    </div>
-                  ))}
+                <div className="max-h-[340px] md:max-h-[480px] lg:max-h-[580px] xl:max-h-[660px] overflow-y-auto pr-1.5 rounded-xl">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    {tickets.map(ticket => (
+                      <div key={ticket.id} className="border border-gray-150 rounded-xl p-3 bg-gray-50/50 shadow-sm flex flex-col justify-center hover:bg-gray-100/70 transition-colors">
+                        <strong className="text-gray-900 text-xs truncate" title={ticket.ticket_id}>{ticket.ticket_id}</strong>
+                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider mt-1">{ticket.movilidades?.length || 0} movilidades</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -378,16 +546,40 @@ export default function PaginaCalculo() {
                 {publicUrl && (
                   <div className="mt-6 pt-6 border-t border-white/10 flex flex-col items-center">
                     <div className="bg-white p-2 rounded-xl shadow-inner">
-                      <QRCodeSVG value={publicUrl} size={128} />
+                      <QRCodeSVG id="qr-code-calculo-svg" value={publicUrl} size={128} />
                     </div>
-                    <a
-                      className="mt-4 w-full text-center text-xs font-semibold bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg border border-white/10 transition-colors"
-                      href={`/public/${resultado.public_slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Abrir página pública
-                    </a>
+
+                    <div className="flex flex-col gap-2 w-full mt-4">
+                      <button
+                        type="button"
+                        onClick={manejarCompartirQR}
+                        disabled={compartiendo}
+                        className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 px-3 rounded-xl shadow-md shadow-indigo-950/50 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-60"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                        </svg>
+                        <span>{compartiendo ? 'Generando...' : 'Compartir QR / Imagen'}</span>
+                      </button>
+
+                      <a
+                        className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white py-2 rounded-xl border border-white/10 transition-colors"
+                        href={`/public/${resultado.public_slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <svg className="w-3.5 h-3.5 text-indigo-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                        <span>Abrir página pública</span>
+                      </a>
+
+                      {mensajeCompartido && (
+                        <div className="text-[11px] text-emerald-300 font-medium bg-emerald-950/80 border border-emerald-500/40 rounded-lg py-1 px-2 mt-1 text-center">
+                          {mensajeCompartido}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

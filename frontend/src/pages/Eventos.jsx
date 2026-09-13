@@ -11,8 +11,9 @@ export default function PaginaEventos() {
 
   // Estados de filtros y ordenación
   const [filtroBusqueda, setFiltroBusqueda] = useState('')
+  const [filtroProductor, setFiltroProductor] = useState('')
+  const [ordenCarga, setOrdenCarga] = useState('recientes')
   const [filtroRegion, setFiltroRegion] = useState('')
-  const [filtroFecha, setFiltroFecha] = useState('')
   const [filtroAsistentes, setFiltroAsistentes] = useState('')
   const [ordenarCalculo, setOrdenarCalculo] = useState('')
 
@@ -31,12 +32,12 @@ export default function PaginaEventos() {
   }, [])
 
   // Extraer valores únicos para los selectores
-  const regionesDisponibles = useMemo(() => {
-    return Array.from(new Set(eventos.map(e => e.region).filter(Boolean))).sort()
+  const productoresDisponibles = useMemo(() => {
+    return Array.from(new Set(eventos.map(e => e.productor?.nombre || e.productor_nombre).filter(Boolean))).sort()
   }, [eventos])
 
-  const anosDisponibles = useMemo(() => {
-    return Array.from(new Set(eventos.map(e => e.fecha ? e.fecha.substring(0, 4) : null).filter(Boolean))).sort()
+  const regionesDisponibles = useMemo(() => {
+    return Array.from(new Set(eventos.map(e => e.region).filter(Boolean))).sort()
   }, [eventos])
 
   // Filtrado y ordenación de la lista de eventos
@@ -49,14 +50,14 @@ export default function PaginaEventos() {
       resultado = resultado.filter(e => e.nombre.toLowerCase().includes(q))
     }
 
+    // Filtro por Productor
+    if (filtroProductor) {
+      resultado = resultado.filter(e => (e.productor?.nombre || e.productor_nombre) === filtroProductor)
+    }
+
     // Filtro por Región
     if (filtroRegion) {
       resultado = resultado.filter(e => e.region === filtroRegion)
-    }
-
-    // Filtro por Año (Fecha)
-    if (filtroFecha) {
-      resultado = resultado.filter(e => e.fecha && e.fecha.startsWith(filtroFecha))
     }
 
     // Filtro por Asistentes
@@ -68,7 +69,7 @@ export default function PaginaEventos() {
       resultado = resultado.filter(e => e.cantidad_asistentes > 2000)
     }
 
-    // Ordenación por Emisiones (Cálculo)
+    // Ordenación
     if (ordenarCalculo === 'mayor_menor') {
       resultado.sort((a, b) => {
         const totalA = a.calculo_actual ? Number(a.calculo_actual.total) : 0
@@ -81,23 +82,29 @@ export default function PaginaEventos() {
         const totalB = b.calculo_actual ? Number(b.calculo_actual.total) : 0
         return totalA - totalB
       })
+    } else if (ordenCarga === 'antiguos') {
+      resultado.sort((a, b) => a.id - b.id)
+    } else {
+      // 'recientes' (últimos cargados) por defecto
+      resultado.sort((a, b) => b.id - a.id)
     }
 
     return resultado
-  }, [eventos, filtroBusqueda, filtroRegion, filtroFecha, filtroAsistentes, ordenarCalculo])
+  }, [eventos, filtroBusqueda, filtroProductor, ordenCarga, filtroRegion, filtroAsistentes, ordenarCalculo])
 
-  const tieneFiltrosActivos = filtroBusqueda || filtroRegion || filtroFecha || filtroAsistentes || ordenarCalculo
+  const tieneFiltrosActivos = filtroBusqueda || filtroProductor || ordenCarga !== 'recientes' || filtroRegion || filtroAsistentes || ordenarCalculo
 
   const restablecerFiltros = () => {
     setFiltroBusqueda('')
+    setFiltroProductor('')
+    setOrdenCarga('recientes')
     setFiltroRegion('')
-    setFiltroFecha('')
     setFiltroAsistentes('')
     setOrdenarCalculo('')
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       {/* Cabecera */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -146,19 +153,19 @@ export default function PaginaEventos() {
         </div>
 
         {/* selectores secundarios */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 border-t border-gray-100 pt-3">
-          {/* Región */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 border-t border-gray-100 pt-3">
+          {/* Productor */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Región</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Productor</label>
             <div className="relative">
               <select
-                value={filtroRegion}
-                onChange={(e) => setFiltroRegion(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium"
+                value={filtroProductor}
+                onChange={(e) => setFiltroProductor(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
               >
-                <option value="">Todas</option>
-                {regionesDisponibles.map(r => (
-                  <option key={r} value={r}>{r}</option>
+                <option value="">Todos los productores</option>
+                {productoresDisponibles.map(p => (
+                  <option key={p} value={p}>{p}</option>
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
@@ -169,18 +176,38 @@ export default function PaginaEventos() {
             </div>
           </div>
 
-          {/* Fecha (Año) */}
+          {/* Orden de Carga */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Año</label>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Orden de carga</label>
             <div className="relative">
               <select
-                value={filtroFecha}
-                onChange={(e) => setFiltroFecha(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium"
+                value={ordenCarga}
+                onChange={(e) => setOrdenCarga(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
               >
-                <option value="">Todos</option>
-                {anosDisponibles.map(a => (
-                  <option key={a} value={a}>{a}</option>
+                <option value="recientes">Últimos cargados (Recientes)</option>
+                <option value="antiguos">Primeros cargados (Antiguos)</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Región */}
+          <div className="space-y-1">
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Región</label>
+            <div className="relative">
+              <select
+                value={filtroRegion}
+                onChange={(e) => setFiltroRegion(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
+              >
+                <option value="">Todas las regiones</option>
+                {regionesDisponibles.map(r => (
+                  <option key={r} value={r}>{r}</option>
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400">
@@ -198,7 +225,7 @@ export default function PaginaEventos() {
               <select
                 value={filtroAsistentes}
                 onChange={(e) => setFiltroAsistentes(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
               >
                 <option value="">Cualquier tamaño</option>
                 <option value="p">Pequeños (&lt; 500)</option>
@@ -220,9 +247,9 @@ export default function PaginaEventos() {
               <select
                 value={ordenarCalculo}
                 onChange={(e) => setOrdenarCalculo(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium"
+                className="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl p-2.5 pl-3 pr-8 text-xs focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all appearance-none cursor-pointer font-medium truncate"
               >
-                <option value="">Recientes primero</option>
+                <option value="">Sin ordenar por huella</option>
                 <option value="mayor_menor">Mayor a menor huella</option>
                 <option value="menor_mayor">Menor a mayor huella</option>
               </select>
@@ -243,7 +270,7 @@ export default function PaginaEventos() {
           <p className="text-sm font-medium text-gray-500">No se encontraron eventos con los filtros seleccionados.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5">
           {eventosProcesados.map((e) => (
             <TarjetaEvento key={e.id} evento={e} />
           ))}

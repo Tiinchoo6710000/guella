@@ -4,6 +4,8 @@ from app.modelos.factor_emision import FactorEmision
 from app.modelos.input_evento import InputEvento
 from app.modelos.ticket_asistente import TicketAsistente
 from app.modelos.movilidad_ticket import MovilidadTicket
+from app.modelos.movilidad_empleado import MovilidadEmpleado
+from app.modelos.evidencia import Evidencia
 from app.modelos.calculo import Calculo
 from app.modelos.detalle_calculo import DetalleCalculo
 from app.modelos.ticket_factor_mapping import TicketFactorMapping

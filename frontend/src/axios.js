@@ -1,16 +1,37 @@
-import axios from 'axios';
+import axios from 'axios'
 
-// Define la URL base de tu API.
-// En desarrollo local, import.meta.env.VITE_API_URL será undefined o la que definas en .env.development.
-// En Vercel, usará la variable de entorno VITE_API_URL que configures.
-// Si no está definida, puedes poner un fallback para desarrollo local si lo necesitas,
-// pero lo ideal es que siempre esté definida en el entorno (o en un archivo .env.development para desarrollo). 
-// Para desarrollo local, si no tienes VITE_API_RENDER configurado, usará 'http://localhost:8000',
-// que es donde esperamos que tu backend FastAPI esté corriendo.
-const API_BASE_URL = import.meta.env.VITE_API_RENDER || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_RENDER || 'http://localhost:8000'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-});
+})
 
-export default api;
+// Interceptor: inyecta el token Bearer en cada request
+api.interceptors.request.use((config) => {
+  try {
+    const raw = localStorage.getItem('guella_auth')
+    if (raw) {
+      const { token } = JSON.parse(raw)
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`
+      }
+    }
+  } catch {
+    // Silencioso si localStorage no tiene datos válidos
+  }
+  return config
+})
+
+// Interceptor: si recibe 401, limpiar sesión y redirigir a login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('guella_auth')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export default api

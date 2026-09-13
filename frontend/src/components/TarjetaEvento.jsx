@@ -13,6 +13,9 @@ export default function TarjetaEvento({ evento }) {
       ? 'bg-amber-50 text-amber-700 border-amber-200'
       : 'bg-emerald-50 text-emerald-700 border-emerald-200'
 
+  const productorNombre = evento.productor?.nombre || evento.productor_nombre || 'Sin asignar'
+  const ubicacion = [evento.ciudad, evento.pais].filter(Boolean).join(', ') || 'Sin ubicación'
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group">
       {/* Header section with status badge */}
@@ -21,37 +24,55 @@ export default function TarjetaEvento({ evento }) {
           <span className={`text-[10px] px-2 py-0.5 font-semibold rounded-full border ${estadoClases}`}>
             {estado}
           </span>
-          <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 uppercase tracking-wide truncate">
-            {evento.region || 'Región'}
+          <span className="text-[10px] text-gray-500 font-medium bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100 uppercase tracking-wide truncate max-w-[120px]" title={evento.pais}>
+            {evento.pais || 'Evento'}
           </span>
         </div>
 
         {/* Title */}
-        <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-tight mb-2 group-hover:text-indigo-600 transition-colors duration-150 truncate" title={evento.nombre}>
+        <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-tight mb-2.5 group-hover:text-indigo-600 transition-colors duration-150 truncate" title={evento.nombre}>
           {evento.nombre}
         </h3>
 
         {/* Metadata Details */}
         <div className="space-y-1.5 text-[11px] sm:text-xs text-gray-500">
-          {/* Location */}
-          <div className="flex items-center gap-1.5 min-w-0">
+          {/* Ubicación */}
+          <div className="flex items-center gap-1.5 min-w-0" title={`Ubicación: ${ubicacion}`}>
             <span className="shrink-0 text-gray-400" aria-hidden="true">📍</span>
-            <span className="truncate" title={`${evento.ciudad}, ${evento.pais}`}>
-              {evento.ciudad}, {evento.pais}
+            <span className="truncate">
+              <span className="text-gray-700 font-medium">{ubicacion}</span>
             </span>
           </div>
 
-          {/* Date */}
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="shrink-0 text-gray-400" aria-hidden="true">📅</span>
-            <span className="truncate">{evento.fecha}</span>
+          {/* Región */}
+          <div className="flex items-center gap-1.5 min-w-0" title={`Región: ${evento.region || '—'}`}>
+            <span className="shrink-0 text-gray-400" aria-hidden="true">🌐</span>
+            <span className="truncate">
+              <span className="text-gray-400 font-normal mr-1">Región:</span>
+              <span className="text-gray-700 font-medium">{evento.region || '—'}</span>
+            </span>
           </div>
 
-          {/* Attendees */}
-          <div className="flex items-center gap-1.5 min-w-0 pt-0.5">
+          {/* Productor */}
+          <div className="flex items-center gap-1.5 min-w-0" title={`Productor: ${productorNombre}`}>
+            <span className="shrink-0 text-gray-400" aria-hidden="true">👤</span>
+            <span className="truncate">
+              <span className="text-gray-400 font-normal mr-1">Productor:</span>
+              <span className="text-gray-700 font-medium">{productorNombre}</span>
+            </span>
+          </div>
+
+          {/* Fecha */}
+          <div className="flex items-center gap-1.5 min-w-0" title={`Fecha: ${evento.fecha}`}>
+            <span className="shrink-0 text-gray-400" aria-hidden="true">📅</span>
+            <span className="truncate text-gray-700 font-medium">{evento.fecha}</span>
+          </div>
+
+          {/* Cantidad de Asistentes */}
+          <div className="flex items-center gap-1.5 min-w-0 pt-0.5" title={`Asistentes: ${evento.cantidad_asistentes}`}>
             <span className="shrink-0 text-gray-400" aria-hidden="true">👥</span>
-            <span className="font-medium text-gray-700 truncate">
-              {evento.cantidad_asistentes.toLocaleString()} asistentes
+            <span className="font-semibold text-gray-800 truncate">
+              {Number(evento.cantidad_asistentes || 0).toLocaleString('es-AR')} asistentes
             </span>
           </div>
         </div>
@@ -75,4 +96,5 @@ export default function TarjetaEvento({ evento }) {
     </div>
   )
 }
+
 

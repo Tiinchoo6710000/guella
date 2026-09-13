@@ -139,7 +139,7 @@ export default function PaginaPublica() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16 px-4 md:px-8 max-w-7xl mx-auto pt-6 md:pt-12">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans pb-16 px-4 sm:px-8 lg:px-12 w-full pt-6 md:pt-12">
       {/* Encabezado Principal / Branding */}
       <header className="text-center mb-8 md:mb-12">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 uppercase">

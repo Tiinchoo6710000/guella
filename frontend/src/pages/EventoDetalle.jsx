@@ -161,9 +161,151 @@ export default function PaginaEventoDetalle() {
   }
 
 
+  const [compartiendo, setCompartiendo] = useState(false)
+  const [mensajeCompartido, setMensajeCompartido] = useState('')
+
+  async function manejarCompartirQR() {
+    const svg = document.getElementById('qr-code-svg')
+    if (!svg || !publicUrl) return
+
+    setCompartiendo(true)
+    setMensajeCompartido('')
+
+    try {
+      const svgData = new XMLSerializer().serializeToString(svg)
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+      const svgUrl = URL.createObjectURL(svgBlob)
+
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+
+      img.onload = () => {
+        try {
+          const qrSize = 500
+          const padding = 40
+          const canvas = document.createElement('canvas')
+          canvas.width = qrSize + padding * 2
+          canvas.height = qrSize + padding * 2 + 100
+          const ctx = canvas.getContext('2d')
+
+          // Fondo blanco
+          ctx.fillStyle = '#ffffff'
+          ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+          // Dibujar QR
+          ctx.drawImage(img, padding, padding, qrSize, qrSize)
+
+          // Texto del Evento
+          ctx.fillStyle = '#0f172a'
+          ctx.font = 'bold 24px system-ui, -apple-system, sans-serif'
+          ctx.textAlign = 'center'
+          const nombreEvento = evento?.nombre || 'Evento'
+          const textoCorto = nombreEvento.length > 35 ? nombreEvento.slice(0, 32) + '...' : nombreEvento
+          ctx.fillText(textoCorto, canvas.width / 2, qrSize + padding + 40)
+
+          // Subtítulo
+          ctx.fillStyle = '#64748b'
+          ctx.font = '16px system-ui, -apple-system, sans-serif'
+          ctx.fillText('Huella de carbono verificada • Guella', canvas.width / 2, qrSize + padding + 70)
+
+          URL.revokeObjectURL(svgUrl)
+
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              setCompartiendo(false)
+              return
+            }
+
+            const fileName = `QR_${(evento?.nombre || 'evento').replace(/[^a-zA-Z0-9_-]/g, '_')}.png`
+            const file = new File([blob], fileName, { type: 'image/png' })
+
+            let compartidoExitoso = false
+
+            // 1. Intentar Web Share API con archivo
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              try {
+                await navigator.share({
+                  title: `QR Huella de carbono - ${evento.nombre}`,
+                  text: `Mirá la huella de carbono de ${evento.nombre}:`,
+                  url: publicUrl,
+                  files: [file]
+                })
+                compartidoExitoso = true
+                setMensajeCompartido('¡QR compartido con éxito!')
+              } catch (err) {
+                if (err.name === 'AbortError') {
+                  setCompartiendo(false)
+                  return
+                }
+              }
+            } else if (navigator.share) {
+              // 2. Intentar Web Share API solo URL
+              try {
+                await navigator.share({
+                  title: `QR Huella de carbono - ${evento.nombre}`,
+                  text: `Mirá la huella de carbono de ${evento.nombre}:`,
+                  url: publicUrl
+                })
+                compartidoExitoso = true
+                setMensajeCompartido('¡Enlace compartido!')
+              } catch (err) {
+                if (err.name === 'AbortError') {
+                  setCompartiendo(false)
+                  return
+                }
+              }
+            }
+
+            // Si no se compartió por Share API (ej. desktop), descargar imagen y copiar enlace
+            if (!compartidoExitoso) {
+              const downloadUrl = URL.createObjectURL(blob)
+              const link = document.createElement('a')
+              link.href = downloadUrl
+              link.download = fileName
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              URL.revokeObjectURL(downloadUrl)
+
+              if (navigator.clipboard) {
+                try {
+                  await navigator.clipboard.writeText(publicUrl)
+                  setMensajeCompartido('¡QR descargado y enlace copiado al portapapeles!')
+                } catch {
+                  setMensajeCompartido('¡QR descargado exitosamente!')
+                }
+              } else {
+                setMensajeCompartido('¡QR descargado exitosamente!')
+              }
+            }
+
+            setTimeout(() => {
+              setMensajeCompartido('')
+            }, 4000)
+            setCompartiendo(false)
+          }, 'image/png')
+        } catch (e) {
+          console.error(e)
+          setCompartiendo(false)
+        }
+      }
+
+      img.onerror = () => {
+        URL.revokeObjectURL(svgUrl)
+        setCompartiendo(false)
+      }
+
+      img.src = svgUrl
+    } catch (err) {
+      console.error(err)
+      setCompartiendo(false)
+    }
+  }
+
   const datosCategoria = useMemo(() => agruparPorCampo(detalleActivo, 'categoria'), [detalleActivo])
   const datosOrigen = useMemo(() => agruparPorCampo(detalleActivo, 'origen'), [detalleActivo])
   const publicUrl = evento?.public_slug ? `${window.location.origin}/public/${evento.public_slug}` : null
+
 
   const estado = evento?.calculo_pendiente
     ? 'Pendiente'
@@ -181,7 +323,7 @@ export default function PaginaEventoDetalle() {
   if (!evento) return <p className="text-center p-8 text-gray-500 font-medium">No se pudo cargar el evento.</p>
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full space-y-6">
       {/* Breadcrumb de navegación */}
       <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
         <Link to="/eventos" className="hover:text-indigo-600 transition-colors">Eventos</Link>
@@ -404,16 +546,40 @@ export default function PaginaEventoDetalle() {
             {publicUrl ? (
               <div className="flex flex-col items-center w-full">
                 <div className="bg-white p-2 rounded-xl shadow-inner">
-                  <QRCodeSVG value={publicUrl} size={128} />
+                  <QRCodeSVG id="qr-code-svg" value={publicUrl} size={128} />
                 </div>
-                <a
-                  className="mt-4 w-full text-center text-xs font-semibold bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg border border-white/10 transition-colors"
-                  href={`/public/${evento.public_slug}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Abrir página pública
-                </a>
+                
+                <div className="flex flex-col gap-2 w-full mt-4">
+                  <button
+                    type="button"
+                    onClick={manejarCompartirQR}
+                    disabled={compartiendo}
+                    className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 px-3 rounded-xl shadow-md shadow-indigo-950/50 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer disabled:opacity-60"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                    </svg>
+                    <span>{compartiendo ? 'Generando...' : 'Compartir QR / Imagen'}</span>
+                  </button>
+
+                  <a
+                    className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white py-2 rounded-xl border border-white/10 transition-colors"
+                    href={`/public/${evento.public_slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg className="w-3.5 h-3.5 text-indigo-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                    <span>Abrir página pública</span>
+                  </a>
+
+                  {mensajeCompartido && (
+                    <div className="text-[11px] text-emerald-300 font-medium bg-emerald-950/80 border border-emerald-500/40 rounded-lg py-1 px-2 mt-1">
+                      {mensajeCompartido}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <p className="text-xs text-indigo-200 opacity-80 mt-2">

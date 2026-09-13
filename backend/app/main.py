@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 import os
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # rutas
+from app.rutas import autenticacion
 from app.rutas import eventos
 from app.rutas import inputs
 from app.rutas import factores
@@ -12,14 +14,19 @@ from app.rutas import movilidad_empleados
 from app.rutas import evidencias
 from app.rutas import public
 from app.rutas import ticket_factor_mappings
+from app.rutas import usuarios
 
 app = FastAPI(title="Guella MRV API" , version = "1.0.0")
+
+# Servir archivos subidos de manera estática
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # Configuración de CORS
 # Obtener los orígenes permitidos de una variable de entorno
 # Esto permite que el frontend de Vercel se conecte al backend de Render
 # Si FRONTEND_URL no está definida, se usa solo localhost para desarrollo local.
-FRONTEND_URLS = os.environ.get("FRONTEND_URL", "http://localhost:5173,http://127.0.0.1:5173").split(',')
+FRONTEND_URLS = os.environ.get("FRONTEND_URL", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:3000,http://localhost:5175").split(',')
 # Limpiar espacios en blanco de cada URL
 FRONTEND_URLS = [url.strip() for url in FRONTEND_URLS]
 
@@ -31,6 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(autenticacion.router)
 app.include_router(eventos.router)
 app.include_router(inputs.router)
 app.include_router(factores.router)
@@ -41,6 +49,7 @@ app.include_router(movilidad_empleados.router)
 app.include_router(evidencias.router)
 app.include_router(public.router)
 app.include_router(ticket_factor_mappings.router)
+app.include_router(usuarios.router)
 
 
 

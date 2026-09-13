@@ -2,10 +2,10 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import OperationalError
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.permisos import verificar_propietario_evento
-from app.core.seguridad import asegurar_admin_fijo, obtener_usuario_actual
+from app.core.seguridad import obtener_usuario_actual
 from app.db.base_de_datos import obtener_db
 from app.esquemas.evento import EventoCrear
 from app.modelos.calculo import Calculo
@@ -22,14 +22,26 @@ router = APIRouter(prefix="/eventos", tags=["Eventos"])
 
 
 def serializar_evento(evento, calculo_actual=None):
+    productor_info = None
+    productor_nombre = None
+    if getattr(evento, "usuario", None):
+        productor_info = {
+            "id": evento.usuario.id,
+            "nombre": evento.usuario.nombre,
+            "email": evento.usuario.email,
+        }
+        productor_nombre = evento.usuario.nombre
+
     return {
         "id": evento.id,
         "nombre": evento.nombre,
-        "fecha": evento.fecha,
+        "fecha": str(evento.fecha) if evento.fecha else None,
         "pais": evento.pais,
         "region": evento.region,
         "ciudad": evento.ciudad,
         "cantidad_asistentes": evento.cantidad_asistentes,
+        "productor": productor_info,
+        "productor_nombre": productor_nombre,
         "estado": evento.estado,
         "calculo_pendiente": evento.calculo_pendiente,
         "public_slug": evento.public_slug,
@@ -50,6 +62,7 @@ def serializar_evento(evento, calculo_actual=None):
     }
 
 
+
 @router.post("")
 def crear_evento(
     datos: EventoCrear,
@@ -63,8 +76,6 @@ def crear_evento(
         )
 
     try:
-        asegurar_admin_fijo(db)
-
         # Manejo robusto de usuario_actual (soporta dict o objeto)
         id_usuario = usuario_actual.get("id") if isinstance(usuario_actual, dict) else getattr(usuario_actual, "id", None)
 
@@ -109,7 +120,13 @@ def listar_eventos(
     db: Session = Depends(obtener_db),
     usuario_actual: dict = Depends(obtener_usuario_actual)
 ):
-    eventos = db.query(Evento).order_by(Evento.fecha.desc(), Evento.id.desc()).all()
+    query = db.query(Evento).options(joinedload(Evento.usuario))
+
+    # Admin ve todos los eventos; productor solo los suyos
+    if usuario_actual.get("rol") != "admin":
+        query = query.filter(Evento.usuario_id == usuario_actual["id"])
+
+    eventos = query.order_by(Evento.fecha.desc(), Evento.id.desc()).all()
     evento_ids = [evento.id for evento in eventos]
     calculos_actuales = {
         calculo.evento_id: calculo
@@ -131,7 +148,7 @@ def obtener_evento(
     db: Session = Depends(obtener_db),
     usuario_actual: dict = Depends(obtener_usuario_actual)
 ):
-    evento = db.query(Evento).filter(Evento.id == evento_id).first()
+    evento = db.query(Evento).options(joinedload(Evento.usuario)).filter(Evento.id == evento_id).first()
     verificar_propietario_evento(evento, usuario_actual)
 
     # Sincronización automática de dimensiones al consultar el detalle
@@ -145,6 +162,7 @@ def obtener_evento(
     ).first()
 
     return serializar_evento(evento, calculo_actual)
+
 
 
 @router.get("/{evento_id}/calculos")
