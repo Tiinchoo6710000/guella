@@ -8,11 +8,11 @@ const MAPA_LABELS = {
 
 export default function GraficoTortaPublico({ datos = [], tamaño = 240, etiqueta = 'kgCO2e' }) {
   const [activoIndex, setActivoIndex] = useState(null)
-  
+
   const total = datos.reduce((sum, item) => sum + Number(item.valor || 0), 0)
   const radio = tamaño / 2
   const centro = tamaño / 2
-  
+
   // Paleta de colores vivos adaptados al fondo oscuro (Slate-950)
   const colores = [
     '#10b981', // emerald-500
@@ -92,7 +92,7 @@ export default function GraficoTortaPublico({ datos = [], tamaño = 240, etiquet
       <div className="relative" style={{ width: tamaño, height: tamaño }}>
         <svg width={tamaño} height={tamaño} viewBox={`0 0 ${tamaño} ${tamaño}`} className="overflow-visible">
           {segmentos}
-          
+
           {/* Círculo central que hace el efecto de la dona */}
           <circle
             cx={centro}
@@ -121,15 +121,14 @@ export default function GraficoTortaPublico({ datos = [], tamaño = 240, etiquet
         {datos.map((item, index) => {
           const esActivo = activoIndex === index
           const porc = total > 0 ? (item.valor / total) * 100 : 0
-          
+
           return (
             <div
               key={item.nombre}
-              className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-pointer select-none ${
-                esActivo
+              className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-pointer select-none ${esActivo
                   ? 'bg-slate-800/60 border-slate-700 shadow-md translate-x-1'
                   : 'bg-transparent border-transparent opacity-85 hover:opacity-100'
-              }`}
+                }`}
               onMouseEnter={() => setActivoIndex(index)}
               onMouseLeave={() => setActivoIndex(null)}
               onClick={() => {
